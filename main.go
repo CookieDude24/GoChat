@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"io"
+	"log"
 	"math/rand"
 	_ "modernc.org/sqlite"
 	"net/http"
@@ -110,11 +111,19 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if !UserAuthenticated(db, msg.Username, msg.UserID) {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+
 		// Save the message to the database
 		_, err = db.Exec(`INSERT INTO messages (user_id, message) VALUES (?, ?)`, msg.UserID, msg.Message)
 		if err != nil {
 			fmt.Println("Error saving message to database:", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
 		}
+		msg.UserID = ""
 
 		// Broadcast the message
 		broadcast <- msg
@@ -175,28 +184,12 @@ func handleGetMessages(w http.ResponseWriter, r *http.Request) {
 }
 func handleUsers(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		rows, err := db.Query(`SELECT username  FROM users`)
-		if err != nil {
-			http.Error(w, "Error fetching users", http.StatusInternalServerError)
-		}
-		defer rows.Close()
-		var users []string
-		for rows.Next() {
-			var user string
-			err := rows.Scan(&user)
-			if err != nil {
-				http.Error(w, "Error scanning users", http.StatusInternalServerError)
-				return
-			}
-			users = append(users, user)
-		}
-
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Failed to read request body", http.StatusBadRequest)
 			return
 		}
-		defer r.Body.Close()
+
 		fmt.Println(string(body))
 		var receivedData Message
 		err = json.Unmarshal(body, &receivedData)
@@ -204,27 +197,110 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Invalid JSON", http.StatusBadRequest)
 			return
 		}
-		fmt.Println("OIDA")
+
+		if receivedData.UserID != "" {
+			if UserAuthenticated(db, receivedData.Username, receivedData.UserID) {
+				http.Error(w, "Authenticated", http.StatusAccepted)
+				return
+			} else {
+				http.Error(w, "Authentication Failed", http.StatusUnauthorized)
+				return
+			}
+		}
+
 		fmt.Println(receivedData)
 		var username = receivedData.Username
 		fmt.Println("checking for '" + username + "' in database")
-		if contains(users, username) {
+
+		if UserExists(db, username) {
 			fmt.Println(username + " already exists")
 			http.Error(w, "Username already exists", http.StatusConflict)
 		} else {
 			user_id := randomString(16)
-			db.Exec(`INSERT INTO users (user_id, username) VALUES (?, ?)`, user_id, username)
+			_, err := db.Exec(`INSERT INTO users (user_id, username) VALUES (?, ?)`, user_id, username)
+			if err != nil {
+				return
+			}
 			fmt.Println(username + " created")
-			user := Message{}
-			user.UserID = user_id
-			user.Username = username
-			json, err := json.Marshal(user)
+
+			var user Message = Message{Username: username, UserID: user_id, Message: "", CreatedAt: ""}
+			user_encoded_json, err := json.Marshal(user)
 			if err != nil {
 				http.Error(w, "Error encoding user", http.StatusInternalServerError)
 			}
-			fmt.Println("sending Data: " + string(json))
-			http.Error(w, string(json), http.StatusCreated)
+
+			fmt.Println("sending Data: " + string(user_encoded_json))
+			http.Error(w, string(user_encoded_json), http.StatusCreated)
 		}
 	}
+	if r.Method == "DELETE" {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Failed to read request body", http.StatusBadRequest)
+			return
+		}
 
+		fmt.Println(string(body))
+		var receivedData Message
+		err = json.Unmarshal(body, &receivedData)
+		if err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		if !UserAuthenticated(db, receivedData.Username, receivedData.UserID) {
+			http.Error(w, "Authentication Failed", http.StatusUnauthorized)
+			return
+
+		}
+
+		if deleteUser(db, receivedData.Username, receivedData.UserID) {
+			http.Error(w, "", http.StatusNoContent)
+		} else {
+			http.Error(w, "Delete Failed", http.StatusInternalServerError)
+		}
+		return
+	}
+
+}
+func UserExists(db *sql.DB, username string) bool {
+	sqlStmt := `SELECT username FROM users WHERE username = ?`
+	err := db.QueryRow(sqlStmt, username).Scan(&username)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			// TODO: a real error happened! you should change your function return
+			// to "(bool, error)" and return "false, err" here
+			log.Print(err)
+			return false
+		}
+
+		return false
+	}
+	return true
+}
+func deleteUser(db *sql.DB, username string, userID string) bool {
+	sqlStmt := `DELETE FROM users WHERE username = ? and user_id = ?`
+	_, err := db.Exec(sqlStmt, username, userID)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	return true
+}
+func UserAuthenticated(db *sql.DB, username string, userId string) bool {
+	sqlStmt := `SELECT user_id, username FROM users WHERE username = ? and user_id = ?`
+
+	err := db.QueryRow(sqlStmt, username, userId).Scan(&username, &userId)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			// TODO: a real error happened! you should change your function return
+			// to "(bool, error)" and return "false, err" here
+			log.Print(err)
+			return false
+		}
+		fmt.Println("user not found")
+		return false
+	}
+	fmt.Println(username, " authenticated")
+	return true
 }

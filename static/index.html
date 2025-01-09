@@ -11,33 +11,56 @@
         }
 
         .message {
-            width: 60%;
+            min-width: 10%;
+            width: fit-content;
+            max-content: 60%;
+            max-width: 60%;
+            p{
+                font-size: 16pt;
+            }
+            padding: 2em 2em 2em 2em;
         }
 
         .self {
             margin-left: auto;
             margin-right: 0;
+            *{
+                float: right;
+            }
         }
 
         .message-text {
             text-align: justify;
         }
+        dialog {
+            height: 100vh;
+            width: 100vw;
+            main{
+                padding: 5em !important;
+                width: 100vw !important;
+            }
+        }
+        .snackbar{
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-direction: row !important;
+
+        }
+
+
     </style>
 </head>
 <body>
-<nav class="m l left">
-    <header>
-        <img class="circle" src="/favicon.png">
+<nav class="m l left" style="overflow-x: hidden;">
+    <header style="transform: scale(1.4)" onclick="onUserAccountClick()">
+        <i >account_circle</i>
     </header>
     <a onClick="scrollToBottom()">
         <i>Chat</i>
         <div>Chat</div>
     </a>
-    <a>
-        <i>search</i>
-        <div>Search</div>
-    </a>
-    <a>
+    <a onClick="shareButton()">
         <i>share</i>
         <div>Share</div>
     </a>
@@ -50,52 +73,129 @@
     </a>
 </nav>
 
-<main class="responsive" id="main" style="overflow-y: hidden;">
-    <div id="chat-box" style="overflow-y: scroll;height: 90vh;padding: 1vh;">
+<main class="responsive" id="main" style="overflow-y: hidden;display: flex; flex-direction: column;">
+    <div id="chat-box" style="overflow-y: scroll;height: 85vh;padding-bottom: 1vh;flex-grow: 1;">
 
     </div>
-    <div class="field label suffix border round fill large bottom responsive primary-container">
-        <input type="text" id="message-input">
-        <label>Message</label>
-        <i>send</i>
+    <div class="row bottom" style="display: flex; align-items: center; justify-content: center;padding-bottom: 1vh;">
+        <div class="field label suffix border round fill large bottom responsive fill" style="flex-grow: 1;max-width: 88%">
+            <input type="text" id="message-input">
+            <label>Message</label>
+        </div>
+        <button class="square round small-elevate extra primary responsive right"  style="width: 10%" onclick="sendMessage()">
+            <i>send</i>
+        </button>
     </div>
+
+
+
 </main>
 
 <dialog class="max" id="username-dialog">
-    <main class="responsive absolute center" style="height: 90vh">
+    <main class="responsive absolute center middle" >
         <h5>Enter Username</h5>
         <div>You need a username to chat!</div>
         <div class="field label large fill round">
             <input type="text" id="username-input">
             <label>Username</label>
         </div>
-        <nav class="right-align">
-            <button class="border" onclick="document.getElementById('username-dialog').classList.remove('active')">Cancel</button>
-            <button onclick="checkUsernameDialog()">Confirm</button>
+        <nav style="display: flex; align-items: center; justify-content: center;">
+            <button class="round border extra" style="flex-grow: 1" onclick="document.getElementById('username-dialog').classList.remove('active')">
+                <i>cancel</i>
+                <span>Cancel</span>
+            </button>
+            <button class="round extra fill" style="flex-grow: 1" onclick="document.getElementById('login-dialog').classList.add('active')">
+                <i>login</i>
+                <span>Login</span>
+            </button>
+            <button onclick="checkUsernameDialog()" style="flex-grow: 1" class="round extra primary">
+                <i>add_circle</i>
+                <span>Create User</span>
+            </button>
         </nav>
-        <div class="snackbar error" id="username-already-taken-error">Username already taken!</div>
+    </main>
+</dialog>
+
+<dialog class="max" id="user-account-dialog">
+    <main class="responsive absolute center middle">
+        <h5>Hi <span id="user-account-dialog-span"></span>!</h5>
+        <div>Access your API-Key or delete your Account here!</div>
+        <nav style="display: flex; align-items: center; justify-content: center;">
+            <button class="round border extra" style="flex-grow: 1" onclick="userAccountDialog.classList.remove('active')">
+                <i>cancel</i>
+                <span>Cancel</span>
+            </button>
+            <button class="round extra fill" style="flex-grow: 1" onclick="copyApiKey()">
+                <i>content_paste</i>
+                <span>Copy API-Key to Clipboard</span>
+            </button>
+            <button class="round extra fill" style="flex-grow: 1" onclick="deleteAccount()">
+                <i>delete</i>
+                <span>Delete your Account</span>
+            </button>
+        </nav>
+
+    </main>
+</dialog>
+
+<dialog class="max" id="login-dialog">
+    <main class="responsive absolute center middle">
+        <h5>Login</h5>
+        <div class="field label large fill round">
+            <input type="text" id="login-username-input">
+            <label>Username</label>
+        </div>
+        <div class="field label large fill round">
+            <input type="password" id="login-api-key-input">
+            <label>API-Key</label>
+        </div>
+        <nav style="display: flex; align-items: center; justify-content: center;">
+            <button class="round border extra" style="flex-grow: 1" onclick="document.getElementById('login-dialog').classList.remove('active')">
+                <i>cancel</i>
+                <span>Cancel</span>
+            </button>
+            <button class="round extra fill" style="flex-grow: 1" onclick="loginButton()">
+                <i>login</i>
+                <span>Login</span>
+            </button>
+        </nav>
+
     </main>
 </dialog>
 <dialog class="max" id="progress-dialog">
-    <main class="responsive absolute center">
-    <h5>Checking if Username is available</h5>
+    <main class="responsive absolute center middle">
+    <h5 id="progress-dialog-text"></h5>
     <progress style="margin-top: 5em"></progress>
     </main>
 </dialog>
 <dialog class="max" id="success-dialog">
-    <main class="responsive absolute center" style="height: 90vh">
-        <h5>Successfully created User <em id="success-username"></em></h5>
+    <main class="responsive absolute center middle">
+        <h5 id="success-dialog-text">Successfully logged in!</h5>
         <progress style="margin-top: 5em"></progress>
         <i class="center" style="margin-top: 5em; transform: scale(6); color: green" >check_circle</i>
     </main>
 </dialog>
+<dialog class="max" id="api-key-dialog">
+    <main class="responsive absolute center middle">
+        <h5>Your Account</h5>
+
+    </main>
+</dialog>
+
+<div class="snackbar error absolute center bottom" id="username-already-taken-error">Username already taken!</div>
+<div class="snackbar primary absolute center bottom" id="share_button_snackbar"><i>content_paste</i> Copied link to clipboard! </div>
+<div class="snackbar primary absolute center bottom" id="api-key-copied"><i>content_paste</i> API-Key successfully copied to clipboard!</div>
+<div class="snackbar error absolute center bottom" id="failedToLogin">Username or API-Key wrong!</div>
+<div class="snackbar primary absolute center bottom" id="deleted-account"><i>delete</i> Successfully deleted Account!</div>
+
 
 <link href="https://cdn.jsdelivr.net/npm/beercss@3.8.0/dist/cdn/beer.min.css" rel="stylesheet">
 
 <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.8.0/dist/cdn/beer.min.js"></script>
-
 <script type="module"
         src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"></script>
+<script src="https://unpkg.com/@jitbit/htmlsanitizer@latest/HtmlSanitizer.js"></script>
+
 </body>
 
 <script src="script.js"></script>
