@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="./gopher.png">
+
     <title>Chat App</title>
     <style>
         * {
@@ -15,16 +17,19 @@
             width: fit-content;
             max-content: 60%;
             max-width: 60%;
-            p{
+
+            p {
                 font-size: 16pt;
             }
+
             padding: 2em 2em 2em 2em;
         }
 
         .self {
             margin-left: auto;
             margin-right: 0;
-            *{
+
+            * {
                 float: right;
             }
         }
@@ -32,22 +37,26 @@
         .message-text {
             text-align: justify;
         }
+
         dialog {
             height: 100vh;
             width: 100vw;
-            main{
+
+            main {
                 padding: 5em !important;
                 width: 100vw !important;
             }
         }
-        .snackbar{
+
+        .snackbar {
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             flex-direction: row !important;
 
         }
-        :root body.light{
+
+        :root body.light {
             --primary: #006782;
             --on-primary: #ffffff;
             --primary-container: #baeaff;
@@ -85,7 +94,8 @@
             --surface-container-high: #e7e8ea;
             --surface-container-highest: #e1e3e4;
         }
-        :root body.dark{
+
+        :root body.dark {
             --primary: #5cd4ff;
             --on-primary: #003545;
             --primary-container: #004d62;
@@ -130,7 +140,7 @@
 <body>
 <nav class="m l left" style="overflow-x: hidden;">
     <header style="transform: scale(1.4)" onclick="onUserAccountClick()">
-        <i >account_circle</i>
+        <i>account_circle</i>
     </header>
     <a onClick="scrollToBottom()">
         <i>Chat</i>
@@ -154,21 +164,22 @@
 
     </div>
     <div class="row bottom" style="display: flex; align-items: center; justify-content: center;padding-bottom: 1vh;">
-        <div class="field label suffix border round fill large bottom responsive fill" style="flex-grow: 1;max-width: 88%">
+        <div class="field label suffix border round fill large bottom responsive fill"
+             style="flex-grow: 1;max-width: 88%">
             <input type="text" id="message-input">
             <label>Message</label>
         </div>
-        <button class="square round small-elevate extra primary responsive right"  style="width: 10%" onclick="sendMessage()">
+        <button class="square round small-elevate extra primary responsive right" style="width: 10%"
+                onclick="sendMessage()">
             <i>send</i>
         </button>
     </div>
 
 
-
 </main>
 
 <dialog class="max" id="username-dialog">
-    <main class="responsive absolute center middle" >
+    <main class="responsive absolute center middle">
         <h5>Enter Username</h5>
         <div>You need a username to chat!</div>
         <div class="field label large fill round">
@@ -176,11 +187,13 @@
             <label>Username</label>
         </div>
         <nav style="display: flex; align-items: center; justify-content: center;">
-            <button class="round border extra" style="flex-grow: 1" onclick="document.getElementById('username-dialog').classList.remove('active')">
+            <button class="round border extra" style="flex-grow: 1"
+                    onclick="document.getElementById('username-dialog').classList.remove('active')">
                 <i>cancel</i>
                 <span>Cancel</span>
             </button>
-            <button class="round extra fill" style="flex-grow: 1" onclick="document.getElementById('login-dialog').classList.add('active')">
+            <button class="round extra fill" style="flex-grow: 1"
+                    onclick="document.getElementById('login-dialog').classList.add('active')">
                 <i>login</i>
                 <span>Login</span>
             </button>
@@ -197,7 +210,8 @@
         <h5>Hi <span id="user-account-dialog-span"></span>!</h5>
         <div>Access your API-Key or delete your Account here!</div>
         <nav style="display: flex; align-items: center; justify-content: center;">
-            <button class="round border extra" style="flex-grow: 1" onclick="userAccountDialog.classList.remove('active')">
+            <button class="round border extra" style="flex-grow: 1"
+                    onclick="userAccountDialog.classList.remove('active')">
                 <i>cancel</i>
                 <span>Cancel</span>
             </button>
@@ -226,7 +240,8 @@
             <label>API-Key</label>
         </div>
         <nav style="display: flex; align-items: center; justify-content: center;">
-            <button class="round border extra" style="flex-grow: 1" onclick="document.getElementById('login-dialog').classList.remove('active')">
+            <button class="round border extra" style="flex-grow: 1"
+                    onclick="document.getElementById('login-dialog').classList.remove('active')">
                 <i>cancel</i>
                 <span>Cancel</span>
             </button>
@@ -240,24 +255,30 @@
 </dialog>
 <dialog class="max" id="progress-dialog">
     <main class="responsive absolute center middle">
-    <h5 id="progress-dialog-text"></h5>
-    <progress style="margin-top: 5em"></progress>
+        <h5 id="progress-dialog-text"></h5>
+        <progress style="margin-top: 5em"></progress>
     </main>
 </dialog>
 <dialog class="max" id="success-dialog">
     <main class="responsive absolute center middle">
         <h5 id="success-dialog-text">Successfully logged in!</h5>
         <progress style="margin-top: 5em"></progress>
-        <i class="center" style="margin-top: 5em; transform: scale(6); color: green" >check_circle</i>
+        <i class="center" style="margin-top: 5em; transform: scale(6); color: green">check_circle</i>
     </main>
 </dialog>
 <dialog class="max" id="about-dialog">
     <main class="responsive absolute center middle">
         <h5>About GoChat</h5>
         <p>
-        GoChat was made by Maximilian Dorninger as a Hack Club High Seas project.
-        It's a real-time chat app which uses technologies like websockets and GoLang.
+            GoChat was made by Maximilian Dorninger as a Hack Club High Seas project.
+            It's a real-time chat app which uses technologies like websockets and GoLang.
+
         </p>
+        <h6>
+            Attributions
+        </h6>
+        <p>The Gopher-Icon was created by Takuya Ueda (https://twitter.com/tenntenn). Licensed under the Creative
+            Commons 3.0 Attributions license.</p>
         <button class="round extra fill" onclick="aboutDialog.classList.remove('active')">
             <i>close</i>
             <span>Return</span>
@@ -267,10 +288,15 @@
 
 
 <div class="snackbar error absolute center bottom" id="username-already-taken-error">Username already taken!</div>
-<div class="snackbar primary absolute center bottom" id="share_button_snackbar"><i>content_paste</i> Copied link to clipboard! </div>
-<div class="snackbar primary absolute center bottom" id="api-key-copied"><i>content_paste</i> API-Key successfully copied to clipboard!</div>
+<div class="snackbar primary absolute center bottom" id="share_button_snackbar"><i>content_paste</i> Copied link to
+    clipboard!
+</div>
+<div class="snackbar primary absolute center bottom" id="api-key-copied"><i>content_paste</i> API-Key successfully
+    copied to clipboard!
+</div>
 <div class="snackbar error absolute center bottom" id="failedToLogin">Username or API-Key wrong!</div>
-<div class="snackbar primary absolute center bottom" id="deleted-account"><i>delete</i> Successfully deleted Account!</div>
+<div class="snackbar primary absolute center bottom" id="deleted-account"><i>delete</i> Successfully deleted Account!
+</div>
 
 
 <link href="https://cdn.jsdelivr.net/npm/beercss@3.8.0/dist/cdn/beer.min.css" rel="stylesheet">
