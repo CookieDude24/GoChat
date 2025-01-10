@@ -208,7 +208,7 @@ scrollToBottom();
 
 
 // Connect to the WebSocket server
-const socket = new WebSocket(`ws://${window.location.host}/ws`);
+const socket = new WebSocket(`wss://${window.location.host}/ws`);
 
 socket.onopen = () => {
     console.log('Connected to the WebSocket server');
