@@ -13,6 +13,7 @@ const apikeyLoginInput = document.getElementById("login-api-key-input");
 const loginDialog = document.getElementById("login-dialog");
 const failedToLogin = document.getElementById("failedToLogin");
 const deletedAccountSnackbar = document.getElementById("deleted-account");
+const aboutDialog = document.getElementById("about-dialog");
 const baseUrl = "https://chat.maxid.me/"
 
 function getCookie(cname) {

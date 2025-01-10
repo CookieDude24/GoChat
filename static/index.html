@@ -143,7 +143,7 @@
     <div class="max">
 
     </div>
-    <a>
+    <a onclick="aboutDialog.classList.add('active')">
         <i>info</i>
         <div>About</div>
     </a>
@@ -251,12 +251,20 @@
         <i class="center" style="margin-top: 5em; transform: scale(6); color: green" >check_circle</i>
     </main>
 </dialog>
-<dialog class="max" id="api-key-dialog">
+<dialog class="max" id="about-dialog">
     <main class="responsive absolute center middle">
-        <h5>Your Account</h5>
-
+        <h5>About GoChat</h5>
+        <p>
+        GoChat was made by Maximilian Dorninger as a Hack Club High Seas project.
+        It's a real-time chat app which uses technologies like websockets and GoLang.
+        </p>
+        <button class="round extra fill" onclick="aboutDialog.classList.remove('active')">
+            <i>close</i>
+            <span>Return</span>
+        </button>
     </main>
 </dialog>
+
 
 <div class="snackbar error absolute center bottom" id="username-already-taken-error">Username already taken!</div>
 <div class="snackbar primary absolute center bottom" id="share_button_snackbar"><i>content_paste</i> Copied link to clipboard! </div>

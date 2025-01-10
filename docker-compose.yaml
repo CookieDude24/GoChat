@@ -1,0 +1,15 @@
+networks:
+  main:
+    external: true
+services:
+  gochat:
+    image: ghcr.io/cookiedude24/gochat:master
+    expose:
+      - 8080
+    networks:
+      - "main"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gochat.rule=Host(`chat.maxid.me`)"
+      - "traefik.http.routers.gochat-https.entrypoints=web-secure"
+      - "traefik.http.routers.gochat-https.tls=true"
