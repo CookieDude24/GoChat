@@ -14,7 +14,10 @@ const loginDialog = document.getElementById("login-dialog");
 const failedToLogin = document.getElementById("failedToLogin");
 const deletedAccountSnackbar = document.getElementById("deleted-account");
 const aboutDialog = document.getElementById("about-dialog");
-const baseUrl = "https://chat.maxid.me/"
+const goDownButton = document.getElementById("go-down-button");
+const messageNav = document.getElementById("message-nav");
+const mainView = document.getElementById("main");
+const baseUrl = window.location.protocol+ "//"+ window.location.host + "/"
 
 function getCookie(cname) {
     let name = cname + "=";
@@ -49,7 +52,7 @@ function checkUsernameDialog() {
 
     setTimeout(function () {
         const username = document.getElementById("username-input").value;
-        const endpoint = baseUrl+"users"; // The server endpoint
+        const endpoint = baseUrl + "users"; // The server endpoint
         console.log(username);
 
         fetch(endpoint, {
@@ -181,9 +184,10 @@ function loadMessages() {
 }
 
 function scrollToBottom() {
-    let oida = document.getElementById('chat-box');
-    oida.scrollTop = oida.scrollHeight;
+    chatBox.scrollTop = chatBox.scrollHeight;
     console.log("Scrolled to bottom");
+    goDownButton.classList.remove("active");
+
 }
 
 function shareButton() {
@@ -202,30 +206,60 @@ function copyApiKey() {
     }, 2000)
     navigator.clipboard.writeText(getCookie("user_id"));
 }
+let socket
+function openSocket() {
+    if (window.location.protocol === 'http:') {
+        socket = new WebSocket(`ws://${window.location.host}/ws`);
+    } else {
+        socket = new WebSocket(`wss://${window.location.host}/ws`);
+    }
+    socket.onopen = () => {
+        console.log('Connected to the WebSocket server');
+    };
+    socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log('Received message: ', message);
 
+        addMessage(message.username, message.message);
+        scrollToBottom();
+
+    };
+    socket.onclose = () => {
+        console.log('Disconnected from the WebSocket server ... trying to reconect in 0.5 second');
+        setTimeout(function () {
+            openSocket();
+        }, 500)
+    };
+}
+
+function isScrolledToBottom(obj) {
+    if (obj.scrollTop !== (obj.scrollHeight - obj.offsetHeight)) {
+        goDownButton.classList.add("active")
+    } else {
+        goDownButton.classList.remove("active");
+    }
+}
+
+function chatBoxResize(){
+    let height= window.innerHeight - parseFloat(window.getComputedStyle(messageNav).height) - 100;
+    console.log("height:", height);
+    console.log("style:", window.getComputedStyle(mainView).height);
+    chatBox.style.height = height+"px";
+}
+
+chatBox.onscroll = function () {
+    isScrolledToBottom(chatBox)
+}
+window.onresize = function () {
+    chatBoxResize();
+}
+
+openSocket();
 loadMessages();
+chatBoxResize();
 scrollToBottom();
 
 
-// Connect to the WebSocket server
-const socket = new WebSocket(`wss://${window.location.host}/ws`);
-
-socket.onopen = () => {
-    console.log('Connected to the WebSocket server');
-};
-
-socket.onmessage = (event) => {
-    const message = JSON.parse(event.data);
-    console.log('Received message: ', message);
-
-    addMessage(message.username, message.message);
-    scrollToBottom();
-
-};
-
-socket.onclose = () => {
-    console.log('Disconnected from the WebSocket server');
-};
 
 messageInput.addEventListener('keypress', function (event) {
     if (event.key === "Enter") {
@@ -247,7 +281,7 @@ function loginButton() {
     let apikey = apikeyLoginInput.value.trim();
     progressDialogText.innerText = "Logging in ...";
     progressDialog.classList.add("active");
-    const endpoint = baseUrl+"users"
+    const endpoint = baseUrl + "users"
     setTimeout(function () {
             fetch(endpoint, {
                 method: "POST", // HTTP method
@@ -260,6 +294,7 @@ function loginButton() {
                     if (response.status === 202) {
                         loginDialog.classList.remove("active");
                         userAccountDialog.classList.remove("active");
+                        usernameDialog.classList.remove("active");
                         successDialog.classList.add("active");
                         setCookie("username", username);
                         setCookie("user_id", apikey);
@@ -296,10 +331,11 @@ function loginButton() {
         }
         , 1500)
 }
+
 function deleteAccount() {
     let username = getCookie("username");
     let apikey = getCookie("user_id");
-    const endpoint = baseUrl+"users"
+    const endpoint = baseUrl + "users"
 
     progressDialogText.innerText = "Deleting Account...";
     progressDialog.classList.add("active");
@@ -316,15 +352,15 @@ function deleteAccount() {
                 deletedAccountSnackbar.classList.add("active");
                 setTimeout(function () {
                     deletedAccountSnackbar.classList.remove("active");
-                },3000)
+                }, 3000)
                 progressDialog.classList.remove("active");
                 successDialog.classList.remove("active");
                 loginDialog.classList.remove("active");
                 userAccountDialog.classList.remove("active");
-            },1500)
+            }, 1500)
             setCookie("username", "", 0);
             setCookie("user_id", "", 0);
-        }else{
+        } else {
             console.log(`HTTP error! status: ${response.status}`);
             progressDialog.classList.remove("active");
             successDialog.classList.remove("active");
@@ -332,8 +368,4 @@ function deleteAccount() {
             userAccountDialog.classList.remove("active");
         }
     })
-
-
-
-
 }

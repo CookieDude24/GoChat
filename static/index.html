@@ -56,6 +56,17 @@
 
         }
 
+        #go-down-button {
+            transform: scale(0) rotate(0deg);
+            margin-top: 5vh;
+            transition: transform 1s;
+            transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #go-down-button.active {
+            transform: scale(1) rotate(720deg);
+        }
+
         :root body.light {
             --primary: #006782;
             --on-primary: #ffffff;
@@ -138,13 +149,10 @@
     </style>
 </head>
 <body>
-<nav class="m l left" style="overflow-x: hidden;">
-    <header style="transform: scale(1.4)" onclick="onUserAccountClick()">
+<nav class="m l left " style="overflow-x: hidden;">
+    <a onclick="onUserAccountClick()">
         <i>account_circle</i>
-    </header>
-    <a onClick="scrollToBottom()">
-        <i>Chat</i>
-        <div>Chat</div>
+        <div>Your Account</div>
     </a>
     <a onClick="shareButton()">
         <i>share</i>
@@ -159,45 +167,77 @@
     </a>
 </nav>
 
-<main class="responsive" id="main" style="overflow-y: hidden;display: flex; flex-direction: column;">
-    <div id="chat-box" style="overflow-y: scroll;height: 85vh;padding-bottom: 1vh;flex-grow: 1;">
+<nav class="s bottom">
+    <a onclick="onUserAccountClick()">
+        <i>account_circle</i>
+        <div>Your Account</div>
+    </a>
+    <a>
+        <i>edit</i>
+        <div>Write Message</div>
+    </a>
+    <a onClick="shareButton()">
+        <i>share</i>
+        <div>Share</div>
+    </a>
+    <a onclick="aboutDialog.classList.add('active')">
+        <i>info</i>
+        <div>About</div>
+    </a>
+
+</nav>
+<main class="responsive " id="main" style="overflow-y: hidden;display: flex; flex-direction: column;">
+    <div id="chat-box" style="overflow-y: scroll;padding-bottom: 1vh;flex-grow: 1;">
 
     </div>
-    <div class="row bottom" style="display: flex; align-items: center; justify-content: center;padding-bottom: 1vh;">
-        <div class="field label suffix border round fill large bottom responsive fill"
-             style="flex-grow: 1;max-width: 88%">
+    <nav id="message-nav" class="center-align bottom-align" style="padding-bottom: min(1vh,3vw);">
+        <div class="field label suffix border round fill large bottom fill">
             <input type="text" id="message-input">
             <label>Message</label>
         </div>
-        <button class="square round small-elevate extra primary responsive right" style="width: 10%"
-                onclick="sendMessage()">
+        <button class="square round small-elevate extra primary right" onclick="sendMessage()">
             <i>send</i>
         </button>
-    </div>
-
-
+    </nav>
 </main>
 
+
 <dialog class="max" id="username-dialog">
-    <main class="responsive absolute center middle">
+    <main class="responsive absolute center middle" style="padding: 0">
         <h5>Enter Username</h5>
         <div>You need a username to chat!</div>
         <div class="field label large fill round">
             <input type="text" id="username-input">
             <label>Username</label>
         </div>
-        <nav style="display: flex; align-items: center; justify-content: center;">
-            <button class="round border extra" style="flex-grow: 1"
+        <nav class="center-align m l">
+            <button class="round border extra"
                     onclick="document.getElementById('username-dialog').classList.remove('active')">
                 <i>cancel</i>
                 <span>Cancel</span>
             </button>
-            <button class="round extra fill" style="flex-grow: 1"
+            <button class="round extra fill"
                     onclick="document.getElementById('login-dialog').classList.add('active')">
                 <i>login</i>
                 <span>Login</span>
             </button>
-            <button onclick="checkUsernameDialog()" style="flex-grow: 1" class="round extra primary">
+            <button onclick="checkUsernameDialog()" class="round extra primary">
+                <i>add_circle</i>
+                <span>Create User</span>
+            </button>
+        </nav>
+        <nav class="center-align s vertical">
+            <button class="round border responsive"
+                    onclick="document.getElementById('username-dialog').classList.remove('active')">
+                <i>cancel</i>
+                <span>Cancel</span>
+            </button>
+            <button class="round fill responsive"
+                    onclick="document.getElementById('login-dialog').classList.add('active')">
+                <i>login</i>
+                <span>Login</span>
+            </button>
+            <button onclick="checkUsernameDialog()" class="round primary responsive">
                 <i>add_circle</i>
                 <span>Create User</span>
             </button>
@@ -209,19 +249,34 @@
     <main class="responsive absolute center middle">
         <h5>Hi <span id="user-account-dialog-span"></span>!</h5>
         <div>Access your API-Key or delete your Account here!</div>
-        <nav style="display: flex; align-items: center; justify-content: center;">
-            <button class="round border extra" style="flex-grow: 1"
+        <nav class="center-align m l">
+            <button class="round border extra"
                     onclick="userAccountDialog.classList.remove('active')">
                 <i>cancel</i>
                 <span>Cancel</span>
             </button>
-            <button class="round extra fill" style="flex-grow: 1" onclick="copyApiKey()">
+            <button class="round extra fill" onclick="copyApiKey()">
                 <i>content_paste</i>
                 <span>Copy API-Key to Clipboard</span>
             </button>
-            <button class="round extra fill" style="flex-grow: 1" onclick="deleteAccount()">
+            <button class="round extra fill" onclick="deleteAccount()">
                 <i>delete</i>
                 <span>Delete your Account</span>
+            </button>
+        </nav>
+        <nav class="center-align s vertical">
+            <button class="round tertiary-container responsive" onclick="deleteAccount()">
+                <i>delete</i>
+                <span>Delete your Account</span>
+            </button>
+            <button class="round fill responsive" onclick="copyApiKey()">
+                <i>content_paste</i>
+                <span>Copy API-Key to Clipboard</span>
+            </button>
+            <button class="round border responsive"
+                    onclick="userAccountDialog.classList.remove('active')">
+                <i>cancel</i>
+                <span>Cancel</span>
             </button>
         </nav>
 
@@ -239,13 +294,13 @@
             <input type="password" id="login-api-key-input">
             <label>API-Key</label>
         </div>
-        <nav style="display: flex; align-items: center; justify-content: center;">
-            <button class="round border extra" style="flex-grow: 1"
+        <nav class="center-align responsive">
+            <button class="round border extra"
                     onclick="document.getElementById('login-dialog').classList.remove('active')">
                 <i>cancel</i>
                 <span>Cancel</span>
             </button>
-            <button class="round extra fill" style="flex-grow: 1" onclick="loginButton()">
+            <button class="round extra primary-container" onclick="loginButton()">
                 <i>login</i>
                 <span>Login</span>
             </button>
@@ -253,6 +308,7 @@
 
     </main>
 </dialog>
+
 <dialog class="max" id="progress-dialog">
     <main class="responsive absolute center middle">
         <h5 id="progress-dialog-text"></h5>
@@ -286,6 +342,11 @@
     </main>
 </dialog>
 
+<button class="absolute top center round chip small-elevate medium tertiary-container" id="go-down-button"
+        onclick="scrollToBottom()">
+    <span>Go to newest messages</span>
+    <i>arrow_downward</i>
+</button>
 
 <div class="snackbar error absolute center bottom" id="username-already-taken-error">Username already taken!</div>
 <div class="snackbar primary absolute center bottom" id="share_button_snackbar"><i>content_paste</i> Copied link to
