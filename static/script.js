@@ -17,6 +17,7 @@ const aboutDialog = document.getElementById("about-dialog");
 const goDownButton = document.getElementById("go-down-button");
 const messageNav = document.getElementById("message-nav");
 const mainView = document.getElementById("main");
+const header = document.getElementById("header");
 const baseUrl = window.location.protocol+ "//"+ window.location.host + "/"
 
 function getCookie(cname) {
@@ -233,7 +234,7 @@ function openSocket() {
 }
 
 function isScrolledToBottom(obj) {
-    if (obj.scrollTop !== (obj.scrollHeight - obj.offsetHeight)) {
+    if (obj.scrollTop+10 < (obj.scrollHeight - obj.offsetHeight)) {
         goDownButton.classList.add("active")
     } else {
         goDownButton.classList.remove("active");
@@ -241,7 +242,12 @@ function isScrolledToBottom(obj) {
 }
 
 function chatBoxResize(){
-    let height= window.innerHeight - parseFloat(window.getComputedStyle(messageNav).height) - 100;
+    let headerHeight = parseFloat(window.getComputedStyle(header).height)
+    if(!window.matchMedia("(max-width: 600px)").matches) {
+        console.log("matches matches");
+        headerHeight = 0
+    }
+    let height= window.innerHeight - parseFloat(window.getComputedStyle(messageNav).height) - headerHeight - 100;
     console.log("height:", height);
     console.log("style:", window.getComputedStyle(mainView).height);
     chatBox.style.height = height+"px";

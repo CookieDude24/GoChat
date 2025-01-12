@@ -15,7 +15,6 @@
         .message {
             min-width: 10%;
             width: fit-content;
-            max-content: 60%;
             max-width: 60%;
 
             p {
@@ -23,6 +22,12 @@
             }
 
             padding: 2em 2em 2em 2em;
+        }
+        @media only screen and (max-width: 600px) {
+            .message {
+                max-width: 100%;
+                text-wrap: wrap;
+            }
         }
 
         .self {
@@ -58,7 +63,7 @@
 
         #go-down-button {
             transform: scale(0) rotate(0deg);
-            margin-top: 5vh;
+            display: inline;
             transition: transform 1s;
             transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -66,7 +71,9 @@
         #go-down-button.active {
             transform: scale(1) rotate(720deg);
         }
-
+        #header, #header *{
+            display: inline;
+        }
         :root body.light {
             --primary: #006782;
             --on-primary: #ffffff;
@@ -149,6 +156,18 @@
     </style>
 </head>
 <body>
+
+<header class="fill top-padding" id="header">
+
+    <h5 class="max left-align">GoChat</h5>
+
+    <button class="fixed right round chip small-elevate max medium tertiary-container" id="go-down-button"
+            onclick="scrollToBottom()">
+        <span class="right-margin">Jump to newest messages</span>
+        <i>arrow_downward</i>
+    </button>
+</header>
+
 <nav class="m l left " style="overflow-x: hidden;">
     <a onclick="onUserAccountClick()">
         <i>account_circle</i>
@@ -172,10 +191,7 @@
         <i>account_circle</i>
         <div>Your Account</div>
     </a>
-    <a>
-        <i>edit</i>
-        <div>Write Message</div>
-    </a>
+
     <a onClick="shareButton()">
         <i>share</i>
         <div>Share</div>
@@ -190,8 +206,8 @@
     <div id="chat-box" style="overflow-y: scroll;padding-bottom: 1vh;flex-grow: 1;">
 
     </div>
-    <nav id="message-nav" class="center-align bottom-align" style="padding-bottom: min(1vh,3vw);">
-        <div class="field label suffix border round fill large bottom fill">
+    <nav id="message-nav" class="center-align bottom-align" style="padding-bottom: min(1vh,3vw)">
+        <div class="field label suffix border round fill large bottom fill" style="width:70%">
             <input type="text" id="message-input">
             <label>Message</label>
         </div>
@@ -342,11 +358,7 @@
     </main>
 </dialog>
 
-<button class="absolute top center round chip small-elevate medium tertiary-container" id="go-down-button"
-        onclick="scrollToBottom()">
-    <span>Go to newest messages</span>
-    <i>arrow_downward</i>
-</button>
+
 
 <div class="snackbar error absolute center bottom" id="username-already-taken-error">Username already taken!</div>
 <div class="snackbar primary absolute center bottom" id="share_button_snackbar"><i>content_paste</i> Copied link to
