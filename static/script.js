@@ -105,15 +105,23 @@ function checkUsernameDialog() {
 }
 
 function messageElementGenerator(username, message) {
-    element = document.createElement('article');
+    let element = document.createElement('article');
+    let h5 = document.createElement('h5');
+    let paragraph = document.createElement('p');
+
+    h5.innerText = username;
+    paragraph.innerText = message;
+    paragraph.classList.add('message-text');
 
     element.innerHTML = `<div class="column"  style="border-radius: 0">
                             <div class="row">
                                 <i class="circle large" style="transform: scale(1.5);margin: 0.25em">account_circle</i>
-                                <h5 class="message-user">${username}</h5>
                             </div>
-                            <p class="message-text" >${message}</p>
                         </div>`;
+
+    element.querySelector('div.row').appendChild(h5);
+    element.querySelector('div').appendChild(paragraph);
+
     element.classList.add('message');
     element.classList.add('bottom-round');
     element.classList.add('right-round');
@@ -122,12 +130,15 @@ function messageElementGenerator(username, message) {
 }
 
 function selfMessageElementGenerator(message) {
-    element = document.createElement('article');
+    let element = document.createElement('article');
     element.innerHTML = `<div class="row">
                             <div class="max">
-                                <p class="message-text">${message}</p>
+                                <p class="message-text"></p>
                             </div>
                         </div>`;
+
+    element.querySelector('p').innerText = message;
+
     element.classList.add('message');
     element.classList.add('bottom-round');
     element.classList.add('left-round');
