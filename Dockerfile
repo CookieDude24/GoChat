@@ -15,6 +15,7 @@ COPY go.mod .
 COPY main.go .
 COPY ./static ./static
 
+
 # Installs Go dependencies
 RUN go mod download
 
@@ -22,7 +23,8 @@ RUN go mod download
 RUN go build -o /godocker
 
 # Defines a mount point for data persistence
-VOLUME ["/app/data"]
+VOLUME ["/app/chat.db"]
+VOLUME ["/app/icons/"]
 
 # Tells Docker which network port your container listens on
 EXPOSE 8080

@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"github.com/rrivera/identicon"
 	"io"
 	"log"
 	"math/rand"
 	_ "modernc.org/sqlite"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -77,11 +79,15 @@ func main() {
 		panic(err)
 	}
 
+	createIconsForOldUsers(db)
+
 	// File server and WebSocket handlers
 	http.Handle("/", http.FileServer(http.Dir("./static")))
+	http.Handle("/icons/", http.StripPrefix("/icons/", http.FileServer(http.Dir("./icons"))))
 	http.HandleFunc("/ws", handleConnections)
 	http.HandleFunc("/messages", handleGetMessages)
 	http.HandleFunc("/users", handleUsers)
+
 	// Start message handling goroutine
 	go handleMessages()
 
@@ -216,14 +222,15 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(username + " already exists")
 			http.Error(w, "Username already exists", http.StatusConflict)
 		} else {
-			user_id := randomString(16)
-			_, err := db.Exec(`INSERT INTO users (user_id, username) VALUES (?, ?)`, user_id, username)
+			userId := randomString(16)
+			generateIcon(username)
+			_, err := db.Exec(`INSERT INTO users (user_id, username) VALUES (?, ?)`, userId, username)
 			if err != nil {
 				return
 			}
 			fmt.Println(username + " created")
 
-			var user Message = Message{Username: username, UserID: user_id, Message: "", CreatedAt: ""}
+			var user Message = Message{Username: username, UserID: userId, Message: "", CreatedAt: ""}
 			user_encoded_json, err := json.Marshal(user)
 			if err != nil {
 				http.Error(w, "Error encoding user", http.StatusInternalServerError)
@@ -256,12 +263,42 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 
 		if deleteUser(db, receivedData.Username, receivedData.UserID) {
 			http.Error(w, "", http.StatusNoContent)
+			_ = os.Remove("./icons/" + receivedData.Username + ".png")
 		} else {
 			http.Error(w, "Delete Failed", http.StatusInternalServerError)
 		}
 		return
 	}
+}
+func createIconsForOldUsers(db *sql.DB) {
+	users := getUsers(db)
+	for _, user := range users {
+		if _, err := os.Stat("./icons/" + user + ".png"); err == nil {
+			log.Print("icon already exists for ", user)
+		} else {
+			log.Print("creating icon for ", user)
+			generateIcon(user)
+		}
+	}
+}
 
+func getUsers(db *sql.DB) []string {
+	sqlStmt := `SELECT username FROM users`
+	rows, err := db.Query(sqlStmt)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			log.Print(err)
+			return nil
+		}
+	}
+	defer rows.Close()
+	var users []string
+	for rows.Next() {
+		var username string
+		err = rows.Scan(&username)
+		users = append(users, username)
+	}
+	return users
 }
 func UserExists(db *sql.DB, username string) bool {
 	sqlStmt := `SELECT username FROM users WHERE username = ?`
@@ -303,4 +340,27 @@ func UserAuthenticated(db *sql.DB, username string, userId string) bool {
 	}
 	fmt.Println(username, " authenticated")
 	return true
+}
+
+func generateIcon(username string) {
+	ig, err := identicon.New(
+		"github", // Namespace
+		7,        // Number of blocks (Size)
+		3,        // Density,
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	ii, err := ig.Draw(username)
+
+	if err != nil {
+		panic(err)
+	}
+
+	img, _ := os.Create("./icons/" + username + ".png")
+	defer img.Close()
+	// Takes the size in pixels and any io.Writer
+	ii.Png(300, img) // 300px * 300px
 }

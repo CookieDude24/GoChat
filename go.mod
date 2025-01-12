@@ -4,6 +4,7 @@ go 1.23
 
 require (
 	github.com/gorilla/websocket v1.5.3
+	github.com/rrivera/identicon v0.0.0-20240116195454-d5ba35832c0d
 	modernc.org/sqlite v1.34.4
 )
 

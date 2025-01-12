@@ -19,6 +19,7 @@ const messageNav = document.getElementById("message-nav");
 const mainView = document.getElementById("main");
 const header = document.getElementById("header");
 const baseUrl = window.location.protocol+ "//"+ window.location.host + "/"
+const accountPicture = document.getElementsByClassName("account");
 
 function getCookie(cname) {
     let name = cname + "=";
@@ -76,6 +77,8 @@ function checkUsernameDialog() {
 
                     setCookie("username", parsed_data["username"]);
                     setCookie("user_id", parsed_data["user_id"]);
+                    setAccountProfile()
+
 
                 } else if (response.status === 409) {
                     progressDialog.classList.remove("active");
@@ -88,6 +91,8 @@ function checkUsernameDialog() {
                 } else {
                     console.log(`HTTP error! status: ${response.status}`);
                 }
+                setAccountProfile()
+
                 progressDialog.classList.remove("active");
 
             })
@@ -100,6 +105,7 @@ function checkUsernameDialog() {
             });
         progressDialog.classList.remove("active");
     }, 1500);
+    setAccountProfile()
 
 
 }
@@ -115,7 +121,7 @@ function messageElementGenerator(username, message) {
 
     element.innerHTML = `<div class="column"  style="border-radius: 0">
                             <div class="row">
-                                <i class="circle large" style="transform: scale(1.5);margin: 0.25em">account_circle</i>
+                                <img class="circle large" src="./icons/${username}.png" >
                             </div>
                         </div>`;
 
@@ -275,8 +281,7 @@ openSocket();
 loadMessages();
 chatBoxResize();
 scrollToBottom();
-
-
+setAccountProfile();
 
 messageInput.addEventListener('keypress', function (event) {
     if (event.key === "Enter") {
@@ -292,6 +297,39 @@ function onUserAccountClick() {
         usernameDialog.classList.add('active')
     }
 }
+
+function setAccountProfile(){
+    for(let i = 0; i < accountPicture.length; i++){
+        try{
+            accountPicture[i].querySelector('img').remove();
+        }catch(err){
+            console.log(err);
+        }
+        try{
+            accountPicture[i].querySelector('i').remove();
+        }catch(err){
+            console.log(err);
+        }
+
+    }
+
+    if (getCookie("username") !== ""){
+        for(let i = 0; i < accountPicture.length; i++){
+            let element = document.createElement('img');
+            element.src = "./icons/"+getCookie("username")+".png";
+            element.classList.add('circle');
+            console.log("username: ", getCookie("username"));
+            accountPicture[i].prepend(element);
+        }
+    }else{
+        for(let i = 0; i < accountPicture.length; i++){
+            let element = document.createElement('i');
+            element.innerHTML = "account_circle";
+            accountPicture[i].prepend(element)
+        }
+    }
+}
+
 
 function loginButton() {
     let username = usernameLoginInput.value.trim();
@@ -316,6 +354,7 @@ function loginButton() {
                         setCookie("username", username);
                         setCookie("user_id", apikey);
                         console.log("remove login dialog")
+                        setAccountProfile()
 
                         setTimeout(function () {
                             successDialog.classList.remove("active")
@@ -327,6 +366,8 @@ function loginButton() {
                         progressDialog.classList.remove("active");
                         loginDialog.classList.add("active");
                         failedToLogin.classList.add("active");
+                        setAccountProfile()
+
                         setTimeout(function () {
                             failedToLogin.classList.remove("active");
                         }, 3000);
@@ -347,6 +388,7 @@ function loginButton() {
             successDialog.classList.remove("active");
         }
         , 1500)
+
 }
 
 function deleteAccount() {
@@ -384,5 +426,7 @@ function deleteAccount() {
             loginDialog.classList.remove("active");
             userAccountDialog.classList.remove("active");
         }
+        setAccountProfile()
+
     })
 }
