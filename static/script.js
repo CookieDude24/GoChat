@@ -261,7 +261,6 @@ function isScrolledToBottom(obj) {
 function chatBoxResize(){
     let headerHeight = parseFloat(window.getComputedStyle(header).height)
     if(!window.matchMedia("(max-width: 600px)").matches) {
-        console.log("matches matches");
         headerHeight = 0
     }
     let height= window.innerHeight - parseFloat(window.getComputedStyle(messageNav).height) - headerHeight - 100;
@@ -292,10 +291,16 @@ messageInput.addEventListener('keypress', function (event) {
 function onUserAccountClick() {
     if (getCookie("user_id") !== "") {
         document.getElementById("user-account-dialog-span").innerText = getCookie("username");
+        loadAccountDialogImage()
         userAccountDialog.classList.add("active");
     } else {
         usernameDialog.classList.add('active')
     }
+}
+
+function loadAccountDialogImage(){
+    document.getElementById('user-account-dialog-picture').src = "./icons/"+getCookie("username")+".png"
+    console.log("User account dialog image loaded");
 }
 
 function setAccountProfile(){

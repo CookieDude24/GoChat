@@ -262,9 +262,12 @@
 
 <dialog class="max" id="user-account-dialog">
     <main class="responsive absolute center middle">
-        <h5>Hi <span id="user-account-dialog-span"></span>!</h5>
-        <div>Access your API-Key or delete your Account here!</div>
-        <nav class="center-align m l">
+        <div class="center-align">
+            <h5>Hi <span id="user-account-dialog-span"></span>!</h5>
+            <img id="user-account-dialog-picture" class="circle extra margin">
+            <div>Access your API-Key or delete your Account here!</div>
+        </div>
+        <nav class="center-align l">
             <button class="round border extra"
                     onclick="userAccountDialog.classList.remove('active')">
                 <i>cancel</i>
@@ -274,12 +277,12 @@
                 <i>content_paste</i>
                 <span>Copy API-Key to Clipboard</span>
             </button>
-            <button class="round extra fill" onclick="deleteAccount()">
+            <button class="round extra tertiary-container" onclick="deleteAccount()">
                 <i>delete</i>
                 <span>Delete your Account</span>
             </button>
         </nav>
-        <nav class="center-align s vertical">
+        <nav class="center-align s m vertical">
             <button class="round tertiary-container responsive" onclick="deleteAccount()">
                 <i>delete</i>
                 <span>Delete your Account</span>
