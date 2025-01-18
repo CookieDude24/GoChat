@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GoChat.iml" filepath="$PROJECT_DIR$/GoChat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/web.iml" filepath="$PROJECT_DIR$/src/web.iml" />
     </modules>
   </component>
 </project>
