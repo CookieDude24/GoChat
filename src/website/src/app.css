@@ -1,0 +1,67 @@
+* {
+    overflow-y: hidden;
+    box-sizing: border-box;
+}
+
+.message {
+    min-width: 10%;
+    width: fit-content;
+    max-width: 60%;
+
+    p {
+        font-size: 16pt;
+    }
+
+    padding: 2em 2em 2em 2em;
+}
+@media only screen and (max-width: 600px) {
+    .message {
+        max-width: 100%;
+        text-wrap: wrap;
+    }
+}
+
+.self {
+    margin-left: auto;
+    margin-right: 0;
+
+    * {
+        float: right;
+    }
+}
+
+.message-text {
+    text-align: justify;
+}
+
+dialog {
+    height: 100vh;
+    width: 100vw;
+
+    main {
+        padding: 5em !important;
+        width: 100vw !important;
+    }
+}
+
+.snackbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: row !important;
+
+}
+
+#go-down-button {
+    transform: scale(0) rotate(0deg);
+    display: inline;
+    transition: transform 1s;
+    transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#go-down-button.active {
+    transform: scale(1) rotate(720deg);
+}
+#header, #header *{
+    display: inline;
+}
