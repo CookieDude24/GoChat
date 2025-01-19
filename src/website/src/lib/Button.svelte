@@ -1,5 +1,6 @@
 <script>
-  export let state = false;
+  //export let state = false;
+  let { state = $bindable() } = $props()
 
   const toggle = () => {
     state = true;

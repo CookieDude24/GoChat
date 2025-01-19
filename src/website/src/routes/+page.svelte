@@ -1,20 +1,12 @@
 <script>
     import Button from '../lib/Button.svelte';
     import ProgressDialog from "../lib/ProgressDialog.svelte";
-    import MainNavBar from "../lib/MainNavBar.svelte";
-    import AboutDialog from "../lib/AboutDialog.svelte";
-    let progressDialog = false;
-    let aboutDialog = false;
+
 </script>
 
-<main>
-    <MainNavBar bind:aboutDialog />
-    <Button bind:state={progressDialog} />
+<main class="responsive fixed center middle">
 
-    {#if progressDialog}
-        <ProgressDialog/>
-    {/if}
-
-
+    <h1>Main</h1>
+    <progress></progress>
 
 </main>

@@ -32,6 +32,8 @@ var broadcast = make(chan Message)
 
 var db *sql.DB
 
+var dev_mode = os.Getenv("DEV_MODE")
+
 func contains(slice []string, value string) bool {
 	for _, v := range slice {
 		if v == value {
@@ -51,6 +53,10 @@ func randomString(length int) string {
 }
 
 func main() {
+	if dev_mode == "TRUE" {
+		log.Println("Running in dev mode!")
+	}
+
 	// Open the SQLite database using modernc.org/sqlite driver
 	var err error
 	db, err = sql.Open("sqlite", "./chat.db")
@@ -99,6 +105,10 @@ func main() {
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
+	if dev_mode == "TRUE" {
+		enableCors(&w)
+	}
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		fmt.Println(err)
@@ -152,6 +162,9 @@ func handleMessages() {
 	}
 }
 func handleGetMessages(w http.ResponseWriter, r *http.Request) {
+	if dev_mode == "TRUE" {
+		enableCors(&w)
+	}
 	rows, err := db.Query(`
 		SELECT 
 			users.username, 
@@ -189,14 +202,17 @@ func handleGetMessages(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func handleUsers(w http.ResponseWriter, r *http.Request) {
+	if dev_mode == "TRUE" {
+		enableCors(&w)
+	}
+
 	if r.Method == "POST" {
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Failed to read request body", http.StatusBadRequest)
 			return
 		}
-
-		fmt.Println(string(body))
+		log.Println("Received POST request: ", string(body))
 		var receivedData Message
 		err = json.Unmarshal(body, &receivedData)
 		if err != nil {
@@ -204,9 +220,10 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if receivedData.UserID != "" {
+		if receivedData.UserID != "" && receivedData.Username != "" {
 			if UserAuthenticated(db, receivedData.Username, receivedData.UserID) {
 				http.Error(w, "Authenticated", http.StatusAccepted)
+				log.Println(receivedData.Username, "authenticated")
 				return
 			} else {
 				http.Error(w, "Authentication Failed", http.StatusUnauthorized)
@@ -216,7 +233,12 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println(receivedData)
 		var username = receivedData.Username
-		fmt.Println("checking for '" + username + "' in database")
+
+		if username == "" {
+			http.Error(w, "Invalid username", http.StatusBadRequest)
+			return
+		}
+		log.Println("checking for '" + username + "' in database")
 
 		if UserExists(db, username) {
 			fmt.Println(username + " already exists")
@@ -363,4 +385,10 @@ func generateIcon(username string) {
 	defer img.Close()
 	// Takes the size in pixels and any io.Writer
 	ii.Png(300, img) // 300px * 300px
+}
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
+	(*w).Header().Set("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers")
 }
