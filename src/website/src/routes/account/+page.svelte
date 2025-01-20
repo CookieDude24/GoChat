@@ -45,8 +45,8 @@
         <main class="responsive fixed center middle" transition:fly>
 
             <div class="center-align">
-                <h5>Hi {user.username}!</h5>
-                <img src="{baseurl}/icons/{user.username}.png" class="circle extra margin">
+                <h1>Hi {user.username}!</h1>
+                <img src="{baseurl}/icons/{user.username}.png" class="circle extra margin" id="user-icon">
                 <div>Access your API-Key or delete your Account here!</div>
             </div>
             <nav class="center-align l">
@@ -102,5 +102,12 @@
         box-sizing: border-box;
 
         max-width: 400px !important;
+    }
+    #user-icon{
+        width: 10em;
+        height: 10em;
+    }
+    h1{
+        word-break: break-all;
     }
 </style>
