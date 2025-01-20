@@ -46,7 +46,7 @@
 
             <div class="center-align">
                 <h1>Hi {user.username}!</h1>
-                <img src="{baseurl}/icons/{user.username}.png" class="circle extra margin" id="user-icon">
+                <img alt="your profile icon" src="{baseurl}/icons/{user.username}.png" class="circle extra margin" id="user-icon">
                 <div>Access your API-Key or delete your Account here!</div>
             </div>
             <nav class="center-align l">
