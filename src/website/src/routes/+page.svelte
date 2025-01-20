@@ -1,24 +1,18 @@
 <script lang="ts">
     import {onMount, tick} from "svelte";
     import {User} from './Global.svelte.ts';
-
     import {dev} from "$app/environment";
     import {getCookie} from "./Global.svelte";
     import {goto} from "$app/navigation";
 
-    let messages: { username: string; message: string }[] = $state([]);
 
-    onMount(() => {
-        openSocket();
-        loadMessages()
-            .then((loadedMessages) => {
-                messages = loadedMessages; // Set messages to display
-            })
-            .catch((error) => {
-                console.error("Error loading messages:", error);
-            });
-    });
-    let socket: any;
+    let mainView: HTMLElement;
+    let messages: { username: string; message: string }[] = $state([]);
+    let chatContainer: HTMLElement;
+    let messageNav: HTMLElement;
+    let messageInput: string;
+    let messageTextInput: HTMLInputElement;
+    let socket: WebSocket;
 
     function openSocket() {
         if (dev) {
@@ -65,51 +59,13 @@
             });
     }
 
-    let chatContainer: HTMLElement;
-    $effect.pre(() => {
-        messages;
-        const autoscroll = chatContainer && chatContainer.offsetHeight + chatContainer.scrollTop > chatContainer.scrollHeight - 50;
-
-        if (autoscroll) {
-            tick().then(() => {
-                chatContainer.scrollTo(0, chatContainer.scrollHeight);
-            });
-        }
-    })
-
-    // function isScrolledToBottom(obj) {
-    //     if (obj.scrollTop+10 < (obj.scrollHeight - obj.offsetHeight)) {
-    //         goDownButton.classList.add("active")
-    //     } else {
-    //         goDownButton.classList.remove("active");
-    //     }
-    // }
-    let messageNav: HTMLElement;
-    let mainView: HTMLElement;
-
     function chatBoxResize() {
-        // let headerHeight = parseFloat(window.getComputedStyle(header).height)
-        // let headerHeight;
-        // if(!window.matchMedia("(max-width: 600px)").matches) {
-        //     headerHeight = 100
-        // }else {
-        //     headerHeight = 0
-        // }
         let height = window.innerHeight - parseFloat(window.getComputedStyle(messageNav).height) - 50;
         console.log("height:", height);
         console.log("style:", window.getComputedStyle(mainView).height);
         chatContainer.style.height = height + "px";
     }
 
-    // chatBox.onscroll = function () {
-    //     isScrolledToBottom(chatBox)
-    // }
-    window.onresize = function () {
-        chatBoxResize();
-    }
-
-    let messageInput: string;
-    let messageTextInput: HTMLInputElement;
 
     async function sendMessage() {
         console.log('Sending message');
@@ -131,11 +87,32 @@
         socket.send(JSON.stringify(chatMessage));
         messageTextInput.value = ''
     }
-    const onKeydown=(event: KeyboardEvent) =>{
-        if (event.key === 'Enter') {
-            sendMessage()
+
+    $effect.pre(() => {
+        messages;
+        const autoscroll = chatContainer && chatContainer.offsetHeight + chatContainer.scrollTop > chatContainer.scrollHeight - 50;
+
+        if (autoscroll) {
+            tick().then(() => {
+                chatContainer.scrollTo(0, chatContainer.scrollHeight);
+            });
         }
-    }
+    })
+
+    onMount(() => {
+        openSocket();
+        loadMessages()
+            .then((loadedMessages) => {
+                messages = loadedMessages; // Set messages to display
+            })
+            .catch((error) => {
+                console.error("Error loading messages:", error);
+            });
+        window.onresize = function () {
+            chatBoxResize();
+        }
+
+    });
 </script>
 
 <main class="responsive fixed center middle" bind:this={mainView}>
@@ -177,7 +154,8 @@
     <nav id="message-nav" bind:this={messageNav} class="center-align bottom-align"
          style="padding-bottom: min(1vh,3vw); flex-grow: 1">
         <div class="field label suffix border round fill large bottom fill" style="width:70%">
-            <input type="text" bind:value={messageInput} bind:this={messageTextInput} onkeydown={onKeydown}>
+            <input type="text" bind:value={messageInput} bind:this={messageTextInput}
+                   onkeydown={(event)=>{event.key === 'Enter' ? sendMessage() : ''}}/>
             <label>Message</label>
         </div>
         <button class="square round small-elevate extra primary right" onclick="{sendMessage}">
@@ -188,10 +166,10 @@
 <style>
     main {
         height: 100vh;
-        width: 80%;
         display: flex;
         overflow-y: scroll;
         flex-direction: column;
+        width: 80%;
     }
 
     .self {
@@ -210,7 +188,12 @@
         #message-nav {
             margin-top: 1em;
             margin-bottom: 10vh;
+        }
 
+        main {
+            width: 100%;
+            margin: 0;
+            padding: 10px
         }
     }
 
