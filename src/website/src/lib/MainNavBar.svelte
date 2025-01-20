@@ -70,8 +70,18 @@
 
 <nav class="s bottom">
     <a href="/account"
-       class="account">
-        <i>account_circle</i>
+       class="account bottom-margin">
+        {#await auth}
+            <i>account_circle</i>
+        {:then authenticated}
+            {#if authenticated}
+                <img src="{baseurl}/icons/{user.username}.png"
+                     class="circle"
+                     alt="your profile picture">
+            {:else }
+                <i>account_circle</i>
+            {/if}
+        {/await}
         <div>Your Account</div>
     </a>
     <a href="/">
