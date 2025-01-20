@@ -61,8 +61,6 @@
 
     function chatBoxResize() {
         let height = window.innerHeight - parseFloat(window.getComputedStyle(messageNav).height) - 50;
-        console.log("height:", height);
-        console.log("style:", window.getComputedStyle(mainView).height);
         chatContainer.style.height = height + "px";
     }
 
@@ -120,15 +118,17 @@
         {#if messages.length === 0}
             <h3 class="center-align middle">No messages yet...</h3>
         {:else}
+            <p id="top-line">-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
             {#each messages as {username, message}}
                 {#if username === getCookie('username')}
                     <article class="message bottom-round left-round border self">
                         <div class="column" style="border-radius: 0">
                             <div class="row">
+                                <h5>You</h5>
+
                                 <img class="circle large"
                                      alt="{username}'s profile picture"
                                      src="{dev ? 'http://localhost:8080' : ''}/icons/{username}.png">
-                                <h5>You</h5>
                             </div>
 
                             <p class="message-text">{message}</p>
@@ -201,6 +201,15 @@
         overflow: visible;
         flex-grow: 1;
     }
+    .message, h3{
+        word-break: break-all;
+    }
 
-
+    #top-line{
+        white-space: nowrap;
+        color: var(--surface);
+        text-decoration: var(--on-surface) underline wavy;
+        text-decoration-thickness: 3px;
+        padding-bottom: 3px;
+    }
 </style>
