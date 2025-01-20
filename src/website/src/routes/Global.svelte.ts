@@ -1,9 +1,6 @@
 import {dev} from "$app/environment";
 
-let baseurl=""
-if(dev){
-    baseurl = "http://localhost:8080";
-}
+let baseurl = dev ? "http://localhost:8080" : ""
 
 export class User {
     username: string = $state(getCookie('username'))
