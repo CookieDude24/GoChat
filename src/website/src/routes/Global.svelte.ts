@@ -74,7 +74,6 @@ export function getCookie(cname: string): string {
     let name = cname + "=";
     let decodedCookie = decodeURIComponent(document.cookie);
     let ca = decodedCookie.split(';');
-    console.log("decoding cookie: ", ca);
     for (let i = 0; i < ca.length; i++) {
         let c = ca[i].trim(); // Use trim() to remove leading/trailing spaces
         if (c.indexOf(name) === 0) {
