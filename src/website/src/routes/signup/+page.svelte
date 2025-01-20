@@ -28,7 +28,7 @@
     }
 </script>
 {#if !loading}
-<main class="responsive fixed center middle" style="padding: 0">
+<main class="responsive fixed center middle" style="padding: 0" transition:fly>
     <h5>Enter Username</h5>
     <div>You need a username to chat!</div>
     <div class="field label large fill round">
@@ -57,6 +57,6 @@
     </nav>
 </main>
 {:else }
-    <ProgressDialog bind:state={loading}/>
+    <ProgressDialog bind:state={loading} />
 {/if}
 <div class="snackbar error absolute center bottom {error ? 'active' : ''}" >Username already taken!</div>
