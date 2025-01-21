@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/rrivera/identicon"
+	_ "image/png"
 	"io"
 	"log"
 	"math/rand"
 	_ "modernc.org/sqlite"
 	"net/http"
 	"os"
+	"path"
 	"time"
 )
 
@@ -57,7 +59,6 @@ func main() {
 		log.Println("Running in dev mode!")
 	}
 
-	// Open the SQLite database using modernc.org/sqlite driver
 	var err error
 	db, err = sql.Open("sqlite", "./chat.db")
 	if err != nil {
@@ -93,6 +94,7 @@ func main() {
 	http.HandleFunc("/ws", handleConnections)
 	http.HandleFunc("/messages", handleGetMessages)
 	http.HandleFunc("/users", handleUsers)
+	http.HandleFunc("/uploadicon", createImage)
 
 	// Start message handling goroutine
 	go handleMessages()
@@ -391,4 +393,50 @@ func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
 	(*w).Header().Set("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers")
+}
+func createImage(w http.ResponseWriter, request *http.Request) {
+	if dev_mode == "TRUE" {
+		enableCors(&w)
+	}
+
+	err := request.ParseMultipartForm(32 << 20) // maxMemory 32MB
+	if err != nil {
+		log.Println("createImage: Unable to parse multipart form")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	username := request.FormValue("username")
+	userID := request.FormValue("user_id")
+	if !UserAuthenticated(db, username, userID) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	file, h, err := request.FormFile("photo")
+	if err != nil {
+		log.Println("createImage: Unable to open file; error:", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if path.Ext(h.Filename) != ".png" {
+		log.Println("createImage: File is not png")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	tmpfile, err := os.Create("./icons/" + username + ".png")
+	defer tmpfile.Close()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	_, err = io.Copy(tmpfile, file)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(200)
+	return
 }
