@@ -15,10 +15,10 @@ COPY src/backend/go.mod .
 COPY src/backend/main.go .
 COPY src/website/build ./static
 
-ENV IconsPath = "/app/icons"
-ENV DbPath    = "/app/chat.db"
-ENV HtmlPath  = "/app/static"
-ENV DEV_MODE = "FALSE"
+ENV IconsPath=/app/icons
+ENV DbPath=/app/chat.db
+ENV HtmlPath=/app/static
+ENV DEV_MODE=FALSE
 
 # Installs Go dependencies
 RUN go mod download
