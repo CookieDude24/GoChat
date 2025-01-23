@@ -228,7 +228,7 @@
     @media only screen and (max-width: 600px) {
         #message-nav {
             margin-top: 1em;
-            margin-bottom: 10vh;
+            margin-bottom: 15vh;
         }
 
         main {
