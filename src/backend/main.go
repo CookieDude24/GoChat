@@ -36,9 +36,9 @@ var db *sql.DB
 
 var dev_mode = os.Getenv("DEV_MODE")
 
-const IconsPath = "./src/backend/icons"
-const DbPath = "./src/backend/chat.db"
-const HtmlPath = "./src/website/build"
+var IconsPath = os.Getenv("ICONS_PATH")
+var DbPath = os.Getenv("DB_PATH")
+var HtmlPath = os.Getenv("HTML_PATH")
 
 func randomString(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -53,6 +53,9 @@ func randomString(length int) string {
 func main() {
 	if dev_mode == "TRUE" {
 		log.Println("Running in dev mode!")
+		IconsPath = "./src/backend/icons"
+		DbPath = "./src/backend/chat.db"
+		HtmlPath = "./src/website/build"
 	}
 
 	var err error

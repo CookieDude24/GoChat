@@ -15,9 +15,9 @@ COPY src/backend/go.mod .
 COPY src/backend/main.go .
 COPY src/website/build ./static
 
-ENV IconsPath=/app/icons
-ENV DbPath=/app/chat.db
-ENV HtmlPath=/app/static
+ENV ICONS_PATH=/app/data/icons
+ENV DB_PATH=/app/data/chat.db
+ENV HTML_PATH=/app/static
 ENV DEV_MODE=FALSE
 
 # Installs Go dependencies
@@ -27,8 +27,8 @@ RUN go mod download
 RUN go build -o /godocker
 
 # Defines a mount point for data persistence
-VOLUME ["/app/chat.db"]
-VOLUME ["/app/icons/"]
+VOLUME ["/app/data/"]
+
 
 # Tells Docker which network port your container listens on
 EXPOSE 8080
