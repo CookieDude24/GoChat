@@ -111,7 +111,7 @@
                 </button>
                 <button class="round secondary-container extra" onclick="{toggleDialog}">
                     <i>upload</i>
-                    <span>Upload Profile Picture</span>
+                    <span>Upload New Profile Picture</span>
                 </button>
                 <button class="round extra secondary-container" onclick="{copyApiKeytoClipboard}">
                     <i>content_paste</i>
@@ -119,7 +119,7 @@
                 </button>
             </nav>
 
-            <nav class="center-align s m vertical">
+            <nav class="center-align s m vertical no-margin">
                 <button class="round tertiary-container responsive" onclick="{signout}">
                     <i>logout</i>
                     <span>Log out of your account</span>
@@ -161,7 +161,11 @@
         margin: auto;
         width: 100vw !important;
     }
-
+    @media (max-width: 600px) {
+        main {
+            overflow-y: scroll;
+        }
+    }
     button {
         box-sizing: border-box;
 

@@ -4,15 +4,18 @@
     import {dev} from "$app/environment";
     import {getCookie} from "./Global.svelte";
     import {goto} from "$app/navigation";
+    import {slide} from "svelte/transition"
+    import {linear} from "svelte/easing";
 
 
     let mainView: HTMLElement;
     let messages: { username: string; message: string }[] = $state([]);
     let chatContainer: HTMLElement;
     let messageNav: HTMLElement;
-    let messageInput: string;
+    let messageInput: string = $state('');
     let messageTextInput: HTMLInputElement;
     let socket: WebSocket;
+    let goDownButton: Boolean = $state(false);
 
     function openSocket() {
         if (dev) {
@@ -83,7 +86,14 @@
             username: user.username, message: message, user_id: user.apikey,
         };
         socket.send(JSON.stringify(chatMessage));
-        messageTextInput.value = ''
+        messageInput = ""
+    }
+
+    function scrollToBottom() {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        console.log("Scrolled to bottom");
+        goDownButton = false
+
     }
 
     $effect.pre(() => {
@@ -99,6 +109,9 @@
 
     onMount(() => {
         openSocket();
+        setTimeout(()=>{
+            scrollToBottom();
+        },100)
         loadMessages()
             .then((loadedMessages) => {
                 messages = loadedMessages; // Set messages to display
@@ -109,33 +122,51 @@
         window.onresize = function () {
             chatBoxResize();
         }
+        chatContainer.onload = scrollToBottom;
+        chatContainer.onscroll = () => {
+            if (chatContainer.scrollTop + chatContainer.offsetHeight < (chatContainer.scrollHeight - chatContainer.offsetHeight)) {
+                goDownButton = true;
+            } else {
+                goDownButton = false;
 
+            }
+        }
     });
+
 </script>
 
 <main class="responsive fixed center middle" bind:this={mainView}>
-    <div id="chatbox" bind:this={chatContainer}>
+    <div id="chatbox" class="bottom-padding" bind:this={chatContainer}>
+        <button class="scrollToBottom top fixed right round chip small-elevate tertiary-container {goDownButton ? 'active':''}"
+                onclick="{scrollToBottom}">
+            <span class="right-margin">Jump to newest messages</span>
+            <i>arrow_downward</i>
+        </button>
         {#if messages.length === 0}
             <h3 class="center-align middle">No messages yet...</h3>
         {:else}
-            <p id="top-line">-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
+            <p id="top-line-text" class="center-align">You've reached the start of the chat</p>
+            <p id="top-line">
+                -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
             {#each messages as {username, message}}
                 {#if username === getCookie('username')}
-                    <article class="message bottom-round left-round border self">
+                    <article class="message bottom-round left-round border self" transition:slide|global>
                         <div class="column" style="border-radius: 0">
-                            <div class="row">
-                                <h5>You</h5>
+                            <div class="row self">
+                                <h5 class="right-align">You</h5>
 
-                                <img class="circle large"
+                                <img class="circle right right-align  large"
                                      alt="{username}'s profile picture"
-                                     src="{dev ? 'http://localhost:8080' : ''}/icons/{username}.png">
+                                     src="{dev ? 'http://localhost:8080' : ''}/icons/{username}.png"
+                                >
                             </div>
 
                             <p class="message-text">{message}</p>
                         </div>
                     </article>
                 {:else}
-                    <article class="message bottom-round right-round secondary-container">
+                    <article class="message bottom-round right-round secondary-container"
+                             transition:slide|global={{ axis: 'x' }}>
                         <div class="column" style="border-radius: 0">
                             <div class="row">
                                 <img class="circle large"
@@ -174,13 +205,23 @@
 
     .self {
         margin-left: auto;
-        margin-right: 0;
+        margin-right: 5px;
+
+        h5, img {
+            display: inline;
+        }
+
+        h5 {
+            margin-left: inherit;
+        }
+
 
     }
 
     #chatbox {
         flex-grow: 1;
         overflow-y: scroll;
+        overflow-x: hidden;
         height: 90vh;
     }
 
@@ -201,15 +242,37 @@
         overflow: visible;
         flex-grow: 1;
     }
-    .message, h3{
+
+    .message, h3 {
         word-break: break-all;
     }
 
-    #top-line{
+    #top-line {
         white-space: nowrap;
         color: var(--surface);
         text-decoration: var(--on-surface) underline wavy;
         text-decoration-thickness: 3px;
         padding-bottom: 3px;
+        overflow-x: hidden;
     }
+
+    .scrollToBottom {
+        transform: scale(0) rotate(0deg);
+        display: inline;
+        transition: transform 1s;
+        transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 100;
+        font-size: 1.3em;
+        margin: 0.8em;
+    }
+
+    .scrollToBottom.active {
+        transform: scale(1) rotate(720deg);
+    }
+
+    #top-line-text {
+        color: var(--on-surface);
+        font-size: 1.7rem;
+    }
+
 </style>

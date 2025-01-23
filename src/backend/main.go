@@ -36,14 +36,10 @@ var db *sql.DB
 
 var dev_mode = os.Getenv("DEV_MODE")
 
-func contains(slice []string, value string) bool {
-	for _, v := range slice {
-		if v == value {
-			return true
-		}
-	}
-	return false
-}
+const IconsPath = "./src/backend/icons"
+const DbPath = "./src/backend/chat.db"
+const HtmlPath = "./src/website/build"
+
 func randomString(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -60,10 +56,11 @@ func main() {
 	}
 
 	var err error
-	db, err = sql.Open("sqlite", "./chat.db")
+	db, err = sql.Open("sqlite", DbPath)
 	if err != nil {
 		panic(err)
 	}
+
 	defer db.Close()
 
 	// Create the users and messages table if it doesn't exist
@@ -89,8 +86,8 @@ func main() {
 	createIconsForOldUsers(db)
 
 	// File server and WebSocket handlers
-	http.Handle("/", http.FileServer(http.Dir("./static")))
-	http.Handle("/icons/", http.StripPrefix("/icons/", http.FileServer(http.Dir("./icons"))))
+	http.Handle("/", http.FileServer(http.Dir(HtmlPath)))
+	http.Handle("/icons/", http.StripPrefix("/icons/", http.FileServer(http.Dir(IconsPath))))
 	http.HandleFunc("/ws", handleConnections)
 	http.HandleFunc("/messages", handleGetMessages)
 	http.HandleFunc("/users", handleUsers)
@@ -131,6 +128,10 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 		if !UserAuthenticated(db, msg.Username, msg.UserID) {
 			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+		if len(msg.Message) == 0 {
+			http.Error(w, "empty messages not allowed", http.StatusBadRequest)
 			return
 		}
 
@@ -296,7 +297,10 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 }
 func createIconsForOldUsers(db *sql.DB) {
 	users := getUsers(db)
+	log.Println(users)
+
 	for _, user := range users {
+		log.Println(user)
 		if _, err := os.Stat("./icons/" + user + ".png"); err == nil {
 			log.Print("icon already exists for ", user)
 		} else {
@@ -383,7 +387,7 @@ func generateIcon(username string) {
 		panic(err)
 	}
 
-	img, _ := os.Create("./icons/" + username + ".png")
+	img, _ := os.Create(IconsPath + "/" + username + ".png")
 	defer img.Close()
 	// Takes the size in pixels and any io.Writer
 	ii.Png(300, img) // 300px * 300px
@@ -425,7 +429,7 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	tmpfile, err := os.Create("./icons/" + username + ".png")
+	tmpfile, err := os.Create(IconsPath + "/" + username + ".png")
 	defer tmpfile.Close()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

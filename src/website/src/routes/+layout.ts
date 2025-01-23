@@ -4,3 +4,5 @@ export function load({ url }) {
     }
 }
 export const ssr = false;
+export const prerender = true;
+
