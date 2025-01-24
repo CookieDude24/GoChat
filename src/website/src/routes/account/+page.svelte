@@ -1,6 +1,6 @@
 <script lang="ts">
     import {getCookie, User} from '../Global.svelte.ts';
-    import {fly} from 'svelte/transition'
+    import {fly, blur} from 'svelte/transition'
     import {goto, invalidateAll} from "$app/navigation";
     import {dev} from '$app/environment';
     import {onMount} from "svelte";
@@ -80,7 +80,7 @@
 {:then authenticated}
     {#if authenticated}
 
-        <main class="responsive fixed center middle" transition:fly>
+        <main class="responsive fixed center middle" transition:blur>
 
             <div class="center-align">
                 <h1>Hi {user.username}!</h1>
@@ -135,7 +135,7 @@
             </nav>
         </main>
     {:else }
-        <main class="responsive fixed center middle center-align" transition:fly>
+        <main class="responsive fixed center middle center-align" transition:blur>
             <h1>You're not signed in!</h1>
             <p>Login or Signup now!</p>
 

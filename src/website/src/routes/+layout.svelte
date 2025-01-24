@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { fly } from 'svelte/transition'
+    import { blur, fade } from 'svelte/transition'
     import MainNavBar from "$lib/MainNavBar.svelte";
 
     export let data
@@ -8,15 +8,15 @@
 
 {#key data.url}
     <div    class ="l m"
-            in:fly={{ y: -200, duration: 300, delay: 200 }}
-            out:fly={{ y: 200, duration: 300 }}
+            in:blur={{ y: -200, duration: 300, delay: 100 }}
+            out:blur={{ y: 200, duration: 100 }}
     >
         <slot />
     </div>
 
     <div    class ="s"
-            in:fly={{ x: -200, duration: 300, delay: 200 }}
-            out:fly={{ x: 200, duration: 300 }}
+            in:blur={{ x: -200, duration: 300, delay: 100 }}
+            out:blur={{ x: 200, duration: 100 }}
     >
         <slot />
     </div>

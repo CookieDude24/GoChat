@@ -4,7 +4,7 @@
     import {dev} from "$app/environment";
     import {getCookie} from "./Global.svelte";
     import {goto} from "$app/navigation";
-    import {slide} from "svelte/transition"
+    import {slide, blur} from "svelte/transition"
     import {linear} from "svelte/easing";
 
 
@@ -150,7 +150,7 @@
                 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</p>
             {#each messages as {username, message}}
                 {#if username === getCookie('username')}
-                    <article class="message bottom-round left-round border self" transition:slide|global>
+                    <article class="message bottom-round left-round border self" in:slide|global out:blur|global>
                         <div class="column" style="border-radius: 0">
                             <div class="row self">
                                 <h5 class="right-align">You</h5>
@@ -166,7 +166,7 @@
                     </article>
                 {:else}
                     <article class="message bottom-round right-round secondary-container"
-                             transition:slide|global={{ axis: 'x' }}>
+                             in:slide|global={{ axis: 'x' }}  out:blur|global >
                         <div class="column" style="border-radius: 0">
                             <div class="row">
                                 <img class="circle large"
@@ -236,6 +236,9 @@
             margin: 0;
             padding: 10px
         }
+        .scrollToBottom{
+            margin-top: 1.5em;
+        }
     }
 
     #message-nav {
@@ -263,7 +266,7 @@
         transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         z-index: 100;
         font-size: 1.3em;
-        margin: 0.8em;
+        margin: 2em !important;
     }
 
     .scrollToBottom.active {
