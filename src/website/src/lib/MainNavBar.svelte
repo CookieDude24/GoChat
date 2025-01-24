@@ -17,7 +17,7 @@
         setTimeout(function () {
             copied = false
         }, 2000)
-        navigator.clipboard.writeText(getCookie("user_id"));
+        navigator.clipboard.writeText("https://chat.maxid.me/");
     }
 
     onMount(async () => {
