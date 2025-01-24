@@ -137,7 +137,7 @@
 
 <main class="responsive fixed center middle" bind:this={mainView}>
     <div id="chatbox" class="bottom-padding" bind:this={chatContainer}>
-        <button class="scrollToBottom top fixed right round chip small-elevate tertiary-container {goDownButton ? 'active':''}"
+        <button class="scrollToBottom l m top fixed right round chip small-elevate tertiary-container {goDownButton ? 'active':''}"
                 onclick="{scrollToBottom}">
             <span class="right-margin">Jump to newest messages</span>
             <i>arrow_downward</i>
@@ -237,8 +237,9 @@
             padding: 10px
         }
         .scrollToBottom{
-            margin-top: 1.5em;
+            margin-top: 10vh !important;
         }
+
     }
 
     #message-nav {
@@ -266,7 +267,7 @@
         transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
         z-index: 100;
         font-size: 1.3em;
-        margin: 2em !important;
+        margin: 2em;
     }
 
     .scrollToBottom.active {
