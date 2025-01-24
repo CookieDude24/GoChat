@@ -137,7 +137,7 @@
 
 <main class="responsive fixed center middle" bind:this={mainView}>
     <div id="chatbox" class="bottom-padding" bind:this={chatContainer}>
-        <button class="scrollToBottom top fixed right round chip small-elevate tertiary-container {goDownButton ? 'active':''}"
+        <button class="scrollToBottom l m top fixed right round chip small-elevate tertiary-container {goDownButton ? 'active':''}"
                 onclick="{scrollToBottom}">
             <span class="right-margin">Jump to newest messages</span>
             <i>arrow_downward</i>
