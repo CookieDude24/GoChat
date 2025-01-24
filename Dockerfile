@@ -15,7 +15,7 @@ COPY src/backend/go.mod .
 COPY src/backend/main.go .
 COPY src/website/build ./static
 
-ENV ICONS_PATH=/app/data/icons
+ENV ICONS_PATH=/app/icons/
 ENV DB_PATH=/app/data/chat.db
 ENV HTML_PATH=/app/static
 ENV DEV_MODE=FALSE
@@ -28,6 +28,8 @@ RUN go build -o /godocker
 
 # Defines a mount point for data persistence
 VOLUME ["/app/data/"]
+VOLUME ["/app/icons/"]
+
 
 
 # Tells Docker which network port your container listens on

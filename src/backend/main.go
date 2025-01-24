@@ -304,7 +304,7 @@ func createIconsForOldUsers(db *sql.DB) {
 
 	for _, user := range users {
 		log.Println(user)
-		if _, err := os.Stat("./icons/" + user + ".png"); err == nil {
+		if _, err := os.Stat(IconsPath + "/" + user + ".png"); err == nil {
 			log.Print("icon already exists for ", user)
 		} else {
 			log.Print("creating icon for ", user)
@@ -443,7 +443,7 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
+	log.Println("Successfully update profile picture for user", username)
 	w.WriteHeader(200)
 	return
 }
