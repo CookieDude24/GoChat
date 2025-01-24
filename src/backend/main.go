@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/rrivera/identicon"
 	_ "image/png"
@@ -99,7 +98,7 @@ func main() {
 	// Start message handling goroutine
 	go handleMessages()
 
-	fmt.Println("Server started on :8080")
+	log.Println("Listening on :8080")
 	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
 		panic("Error starting server: " + err.Error())
@@ -113,7 +112,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	defer conn.Close()
@@ -124,7 +123,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 		var msg Message
 		err := conn.ReadJSON(&msg)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			delete(clients, conn)
 			return
 		}
@@ -137,11 +136,11 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "empty messages not allowed", http.StatusBadRequest)
 			return
 		}
-
+		log.Println(msg.Username, "sent", msg.Message)
 		// Save the message to the database
 		_, err = db.Exec(`INSERT INTO messages (user_id, message) VALUES (?, ?)`, msg.UserID, msg.Message)
 		if err != nil {
-			fmt.Println("Error saving message to database:", err)
+			log.Println("Error saving message to database:", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
@@ -160,7 +159,7 @@ func handleMessages() {
 		for client := range clients {
 			err := client.WriteJSON(msg)
 			if err != nil {
-				fmt.Println("Error sending message:", err)
+				log.Println("Error sending message:", err)
 				client.Close()
 				delete(clients, client) // Remove disconnected clients
 			}
@@ -226,6 +225,7 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// for login
 		if receivedData.UserID != "" && receivedData.Username != "" {
 			if UserAuthenticated(db, receivedData.Username, receivedData.UserID) {
 				http.Error(w, "Authenticated", http.StatusAccepted)
@@ -233,11 +233,11 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 				return
 			} else {
 				http.Error(w, "Authentication Failed", http.StatusUnauthorized)
+				log.Println(receivedData.Username, "authentication failed")
 				return
 			}
 		}
 
-		fmt.Println(receivedData)
 		var username = receivedData.Username
 
 		if username == "" {
@@ -247,7 +247,7 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 		log.Println("checking for '" + username + "' in database")
 
 		if UserExists(db, username) {
-			fmt.Println(username + " already exists")
+			log.Println(username + " already exists")
 			http.Error(w, "Username already exists", http.StatusConflict)
 		} else {
 			userId := randomString(16)
@@ -256,7 +256,7 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				return
 			}
-			fmt.Println(username + " created")
+			log.Println(username + " created")
 
 			var user Message = Message{Username: username, UserID: userId, Message: "", CreatedAt: ""}
 			user_encoded_json, err := json.Marshal(user)
@@ -264,7 +264,7 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Error encoding user", http.StatusInternalServerError)
 			}
 
-			fmt.Println("sending Data: " + string(user_encoded_json))
+			log.Println("sending Data: " + string(user_encoded_json))
 			http.Error(w, string(user_encoded_json), http.StatusCreated)
 		}
 	}
@@ -275,7 +275,7 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Println(string(body))
+		log.Println(string(body))
 		var receivedData Message
 		err = json.Unmarshal(body, &receivedData)
 		if err != nil {
@@ -295,6 +295,7 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 		} else {
 			http.Error(w, "Delete Failed", http.StatusInternalServerError)
 		}
+		log.Println("deleted user:", receivedData.Username)
 		return
 	}
 }
@@ -307,7 +308,6 @@ func createIconsForOldUsers(db *sql.DB) {
 		if _, err := os.Stat(IconsPath + "/" + user + ".png"); err == nil {
 			log.Print("icon already exists for ", user)
 		} else {
-			log.Print("creating icon for ", user)
 			generateIcon(user)
 		}
 	}
@@ -350,7 +350,7 @@ func deleteUser(db *sql.DB, username string, userID string) bool {
 	sqlStmt := `DELETE FROM users WHERE username = ? and user_id = ?`
 	_, err := db.Exec(sqlStmt, username, userID)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return false
 	}
 	return true
@@ -366,10 +366,10 @@ func UserAuthenticated(db *sql.DB, username string, userId string) bool {
 			log.Print(err)
 			return false
 		}
-		fmt.Println("user not found")
+		log.Println("user not found")
 		return false
 	}
-	fmt.Println(username, " authenticated")
+	log.Println(username, " authenticated")
 	return true
 }
 
@@ -394,6 +394,7 @@ func generateIcon(username string) {
 	defer img.Close()
 	// Takes the size in pixels and any io.Writer
 	ii.Png(300, img) // 300px * 300px
+	log.Println("successfully generated icon for ", username)
 }
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
