@@ -237,7 +237,8 @@
             padding: 10px
         }
         .scrollToBottom{
-            margin-top: 10vh !important;
+            margin-top: 5vh !important;
+            font-size: 1.0em !important;
         }
 
     }
