@@ -31,6 +31,8 @@
     @media (max-width: 600px) {
         main {
             overflow-y: visible;
+            width: 100vw;
+            padding: 5vw;
         }
     }
 
