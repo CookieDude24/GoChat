@@ -30,6 +30,9 @@
             const message = JSON.parse(event.data);
             console.log("sSReceived message: ", message);
             messages = [...messages, message]; // Append new message
+
+            // for firefox compatibility
+            setTimeout(() => {scrollToBottom()}, 500)
         };
         socket.onclose = () => {
             console.log(
