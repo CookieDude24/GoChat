@@ -92,6 +92,8 @@
             <dialog class="{uploadProfilePictureDialog ? 'active' : 'inactive'} center-align max">
                 <h3 class="margin">Upload your profile picture</h3>
                 <p class="margin">Click on the button below to upload your own custom profile picture. (Only .png files allowed!)</p>
+                <p class="margin bold deep-orange-text">Updating the profile picture may take a few minutes (waiting for browser cache invalidation)!</p>
+
                 <button class="tertiary-container extra margin">
                     <i>attach_file</i>
                     <span>File</span>
