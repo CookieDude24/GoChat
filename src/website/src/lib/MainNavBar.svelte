@@ -4,6 +4,8 @@
     import {afterNavigate, onNavigate} from "$app/navigation";
     import {onMount} from "svelte";
     import {page} from '$app/state';
+    import {blur} from 'svelte/transition';
+    import ui from "beercss";
 
     let baseurl: string = "";
     if (dev) {
@@ -11,6 +13,7 @@
     }
 
     let copied: boolean = $state(false);
+    let lightMode: boolean = $state(false);
 
     function copyLinktoClipboard() {
         copied = true
@@ -23,6 +26,7 @@
     onMount(async () => {
         auth = await new User().validateLogin()
         user = new User()
+        lightMode = ui('mode') === 'light';
     })
     let auth = $state(false);
     let user: User = $state(new User());
@@ -39,6 +43,16 @@
 
 
     })
+    function switchMode(){
+        let mode = ui('mode')
+        if(mode == 'light') {
+            ui("mode",'dark')
+            lightMode = false;
+        }else {
+            ui("mode",'light')
+            lightMode = true;
+        }
+    }
 </script>
 
 <nav class="m l left right-padding" style="overflow-x: hidden;">
@@ -62,10 +76,18 @@
         <i>chat</i>
         <div>Chat</div>
     </a>
-    <a href="/" onclick={copyLinktoClipboard}>
-
+    <a onclick={copyLinktoClipboard}>
         <i>share</i>
         <div>Share</div>
+    </a>
+    <a onclick="{switchMode}">
+        {#if lightMode}
+            <i>dark_mode</i>
+            <div>Dark mode</div>
+            {:else}
+            <i>light_mode</i>
+            <div>White mode</div>
+        {/if}
     </a>
     <div class="max">
 
@@ -109,7 +131,6 @@
         <div>Chat</div>
     </a>
     <a onclick={copyLinktoClipboard}>
-
         <i>share</i>
         <div>Share</div>
     </a>
@@ -126,11 +147,6 @@
     clipboard!
 </div>
 <style>
-    .account.active div, .account:hover div {
-        background: var(--secondary-container);
-        border-radius: 15px;
-        padding: 5px;
-    }
     .account div {
         padding: 5px;
     }
