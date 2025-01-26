@@ -98,7 +98,7 @@
 {:then authenticated}
     {#if authenticated}
 
-        <main class="responsive fixed center middle" transition:blur>
+        <main class="responsive fixed center {window.matchMedia('screen and (max-width: 600px)').matches ? 'top' : 'middle'}" transition:blur>
 
             <div class="center-align">
                 <h1>Hi {user.username}!</h1>
@@ -125,21 +125,37 @@
 
 
             <nav class="center-align l">
-                <button class="round tertiary-container extra" onclick="{signout}">
-                    <i>logout</i>
-                    <span>Log out of your account</span>
-                </button>
-                <button class="round secondary-container extra" onclick="{toggleDialog}">
-                    <i>upload</i>
-                    <span>Upload New Profile Picture</span>
-                </button>
-                <button class="round extra secondary-container" onclick="{copyApiKeytoClipboard}">
-                    <i>content_paste</i>
-                    <span>Copy API-Key to Clipboard</span>
-                </button>
+                <div class="column">
+                    <div class="row center-align">
+                        <button class="round tertiary-container extra" onclick="{signout}">
+                            <i>logout</i>
+                            <span>Log out of your account</span>
+                        </button>
+                        <button class="round tertiary-container extra" onclick="{deleteAccount}">
+                            <i>delete</i>
+                            <span>Delete your account</span>
+                        </button>
+                    </div>
+                    <div class="row center-align">
+                        <button class="round secondary-container extra" onclick="{toggleDialog}">
+                            <i>upload</i>
+                            <span>Upload New Profile Picture</span>
+                        </button>
+                        <button class="round extra secondary-container" onclick="{copyApiKeytoClipboard}">
+                            <i>content_paste</i>
+                            <span>Copy API-Key to Clipboard</span>
+                        </button>
+                    </div>
+                </div>
+
+
             </nav>
 
-            <nav class="center-align s m vertical no-margin">
+            <nav class="center-align s m vertical">
+                <button class="round tertiary-container responsive" onclick="{deleteAccount}">
+                    <i>delete</i>
+                    <span>Delete your account</span>
+                </button>
                 <button class="round tertiary-container responsive" onclick="{signout}">
                     <i>logout</i>
                     <span>Log out of your account</span>
