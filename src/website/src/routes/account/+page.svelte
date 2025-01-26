@@ -68,6 +68,24 @@
             error = false
         },5000)
     }
+    function deleteAccount(){
+        const user = new User();
+        let username = user.username
+        let apikey = user.apikey;
+        fetch(baseurl+"/account", {
+            method: "DELETE", // HTTP method
+            headers: {
+                "Content-Type": "application/json", // Indicates JSON payload
+            }, body: JSON.stringify({"username": username, "user_id": apikey}), // Send the string in the request body
+        }).then(async response => {
+            if (response.status === 204) {
+                signout()
+            }else{
+                console.log(`HTTP error! status: ${response.status}`);
+            }
+        })
+        console.log("deleted Account");
+    }
 </script>
 
 {#await authenticated}
@@ -91,13 +109,13 @@
 
             <dialog class="{uploadProfilePictureDialog ? 'active' : 'inactive'} center-align max">
                 <h3 class="margin">Upload your profile picture</h3>
-                <p class="margin">Click on the button below to upload your own custom profile picture. (Only .png files allowed!)</p>
+                <p class="margin">Click on the button below to upload your own custom profile picture</p>
                 <p class="margin bold deep-orange-text">Updating the profile picture may take a few minutes (waiting for browser cache invalidation)!</p>
 
                 <button class="tertiary-container extra margin">
                     <i>attach_file</i>
                     <span>File</span>
-                    <input type="file" id="photo" accept="image/png" bind:this={iconInput}>
+                    <input type="file" id="photo" accept="image" bind:this={iconInput}>
                 </button>
                 <nav class="center-align">
                     <button class="extra fill" onclick="{toggleDialog}">Cancel</button>

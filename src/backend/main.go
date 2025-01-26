@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"github.com/rrivera/identicon"
+	"image"
+	"image/png"
 	_ "image/png"
 	"io"
 	"log"
@@ -12,7 +14,6 @@ import (
 	_ "modernc.org/sqlite"
 	"net/http"
 	"os"
-	"path"
 	"time"
 )
 
@@ -286,7 +287,6 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 		if !UserAuthenticated(db, receivedData.Username, receivedData.UserID) {
 			http.Error(w, "Authentication Failed", http.StatusUnauthorized)
 			return
-
 		}
 
 		if deleteUser(db, receivedData.Username, receivedData.UserID) {
@@ -421,14 +421,16 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	file, h, err := request.FormFile("photo")
+	file, _, err := request.FormFile("photo")
 	if err != nil {
 		log.Println("createImage: Unable to open file; error:", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if path.Ext(h.Filename) != ".png" {
-		log.Println("createImage: File is not png")
+
+	img, _, err := image.Decode(file)
+	if err != nil {
+		log.Println("createImage: Unable to decode file; error:", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -436,14 +438,18 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 	tmpfile, err := os.Create(IconsPath + "/" + username + ".png")
 	defer tmpfile.Close()
 	if err != nil {
+		log.Println("createImage: Unable to create file; error:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	_, err = io.Copy(tmpfile, file)
+
+	err = png.Encode(tmpfile, img)
 	if err != nil {
+		log.Println("createImage: Unable to encode file; error:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
 	log.Println("Successfully update profile picture for user", username)
 	w.WriteHeader(200)
 	return
