@@ -32,7 +32,7 @@
     <h5>Enter Username</h5>
     <div>You need a username to chat!</div>
     <div class="field label large fill round">
-        <input type="text" bind:this={usernameInput} bind:value={user.username} onkeydown="{(event)=>{event.key === 'Enter' ? signup(): ''}}" />
+        <input type="text" bind:this={usernameInput} bind:value={user.username} onkeydown="{(event)=>{event.key === 'Enter' ? signup(): ''}}" maxlength="20" />
         <label>Username</label>
     </div>
     <nav class="center-align l">

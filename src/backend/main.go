@@ -245,6 +245,11 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Invalid username", http.StatusBadRequest)
 			return
 		}
+		if len(username) > 20 {
+			http.Error(w, "Username too long", http.StatusBadRequest)
+			return
+		}
+
 		log.Println("checking for '" + username + "' in database")
 
 		if UserExists(db, username) {
