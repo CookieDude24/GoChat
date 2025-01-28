@@ -28,7 +28,7 @@
         };
         socket.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log("sSReceived message: ", message);
+            console.log("Received message: ", message);
             messages = [...messages, message]; // Append new message
 
             // for firefox compatibility
@@ -255,6 +255,21 @@
         word-break: break-all;
     }
 
+    .message {
+        min-width: 10%;
+        width: fit-content;
+        max-width: 60%;
+
+        p {
+            font-size: 16pt;
+        }
+
+        padding: 2em 2em 2em 2em;
+    }
+    .message-text {
+        text-align: justify;
+    }
+
     #top-line {
         white-space: nowrap;
         color: var(--surface);
@@ -282,5 +297,15 @@
         color: var(--on-surface);
         font-size: 1.7rem;
     }
+
+
+    @media only screen and (max-width: 600px) {
+        .message {
+            max-width: 100%;
+            text-wrap: wrap;
+        }
+    }
+
+
 
 </style>

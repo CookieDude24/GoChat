@@ -1,6 +1,7 @@
 import {dev} from "$app/environment";
 
-let baseurl = dev ? "http://localhost:8080" : ""
+export let baseurl = dev ? "http://localhost:8080" : ""
+
 
 export class User {
     username: string = $state(getCookie('username'))
@@ -67,6 +68,9 @@ export class User {
     signout():void{
         setCookie("username", "");
         setCookie("user_id", "");
+    }
+    setUsername(username: string):void{
+        setCookie("username", username);
     }
 }
 
