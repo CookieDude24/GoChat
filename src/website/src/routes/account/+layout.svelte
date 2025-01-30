@@ -48,13 +48,14 @@
     main {
         margin: auto;
         width: 80vw;
+        height: max(80vh, fit-content);
     }
 
 
 
     @media (max-width: 600px) {
         main {
-            height: 85vh !important;
+            height: 85vh;
             width: 100vw;
             overflow-y: scroll;
         }

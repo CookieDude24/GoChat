@@ -1,6 +1,6 @@
 <script lang="ts">
     import {onMount, tick} from "svelte";
-    import {User} from './Global.svelte.ts';
+    import {User,baseurl} from './Global.svelte.ts';
     import {dev} from "$app/environment";
     import {getCookie} from "./Global.svelte";
     import {goto} from "$app/navigation";
@@ -45,10 +45,7 @@
     }
 
     function loadMessages() {
-        let url = "/messages";
-        if (dev) {
-            url = "http://localhost:8080/messages";
-        }
+        let url = baseurl+"/messages";
 
         return fetch(url, {
             method: "GET",
@@ -57,12 +54,30 @@
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.json(); // Parse and return the JSON response
+                return response.json();
             })
             .catch((error) => {
                 console.error("Failed to load messages:", error);
-                throw error; // Re-throw the error for further handling
+                throw error;
             });
+    }
+    async function loadChatrooms(){
+        let url = baseurl+"/chatrooms";
+
+        console.log(fetch(url, {
+            method: "GET",
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .catch((error) => {
+                console.error("Failed to load chatrooms:", error);
+                throw error;
+            }));
+        return
     }
 
     function chatBoxResize() {
@@ -117,7 +132,7 @@
         },100)
         loadMessages()
             .then((loadedMessages) => {
-                messages = loadedMessages; // Set messages to display
+                messages = loadedMessages;
             })
             .catch((error) => {
                 console.error("Error loading messages:", error);
@@ -134,6 +149,7 @@
 
             }
         }
+        loadChatrooms()
     });
 
 </script>
@@ -305,7 +321,4 @@
             text-wrap: wrap;
         }
     }
-
-
-
 </style>

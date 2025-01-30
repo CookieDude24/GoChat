@@ -4,7 +4,7 @@
     import ProgressDialog from "$lib/ProgressDialog.svelte";
     import {fly} from "svelte/transition"
     import {onMount} from "svelte";
-    import ErrorSnackbar from "$lib/ErrorSnackbar.svelte";
+    import Snackbar from "$lib/Snackbar.svelte";
 
     let loading = $state(false);
 
@@ -60,4 +60,4 @@
 {:else }
     <ProgressDialog bind:state={loading} />
 {/if}
-<ErrorSnackbar text={"Username already taken!"} bind:active={error} error={true}></ErrorSnackbar>
+<Snackbar text={"Username already taken!"} bind:active={error} error={true}></Snackbar>

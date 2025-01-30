@@ -2,6 +2,7 @@
     import {getCookie, User, baseurl} from '../Global.svelte.ts';
     import {goto, invalidateAll} from "$app/navigation";
     import AccountGreeting from "$lib/AccountGreeting.svelte";
+    import Snackbar from "$lib/Snackbar.svelte";
 
     let user = new User();
     let copied = $state(false);
@@ -11,9 +12,6 @@
 
     function copyApiKeytoClipboard() {
         copied = true
-        setTimeout(function () {
-            copied = false
-        }, 2000)
         navigator.clipboard.writeText(getCookie("user_id"));
     }
 
@@ -62,10 +60,10 @@
         let username = user.username
         let apikey = user.apikey;
         fetch(baseurl + "/account", {
-            method: "DELETE", // HTTP method
+            method: "DELETE",
             headers: {
-                "Content-Type": "application/json", // Indicates JSON payload
-            }, body: JSON.stringify({"username": username, "user_id": apikey}), // Send the string in the request body
+                "Content-Type": "application/json",
+            }, body: JSON.stringify({"username": username, "user_id": apikey}),
         }).then(async response => {
             if (response.status === 204) {
                 signout()
@@ -149,9 +147,5 @@
     </button>
 </nav>
 
-
-<div class="snackbar primary absolute center bottom {copied ? 'active' : ''}" id="api-key-copied"><i>content_paste</i>
-    API-Key successfully
-    copied to clipboard!
-</div>
-<div class="snackbar error absolute center bottom {error ? 'active' : ''}">Error uploading profile picture!</div>
+<Snackbar text={"API-Key successfully copied to clipboard!"} bind:active={copied}></Snackbar>
+<Snackbar text={"Error uploading profile picture!"} bind:active={error} error={true}></Snackbar>
