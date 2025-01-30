@@ -100,7 +100,6 @@
     }
 
     $effect.pre(() => {
-        messages;
         const autoscroll = chatContainer && chatContainer.offsetHeight + chatContainer.scrollTop > chatContainer.scrollHeight - 50;
 
         if (autoscroll) {
@@ -108,6 +107,10 @@
                 chatContainer.scrollTo(0, chatContainer.scrollHeight);
             });
         }
+    })
+    $effect(() => {
+        currentChatroom;
+        scrollToBottom();
     })
     $effect(() => {
         loadMessages()
@@ -195,35 +198,35 @@
             {/each}
         {/if}
     </div>
-    <nav  bind:this={messageNav} class="center-align bottom-align message-nav l"
-         style="padding-bottom: min(1vh,3vw); flex-grow: 1">
-        <button class="round extra tertiary left m l" onclick="{chatroomDialogStateSwitch}">
+    <nav  bind:this={messageNav} class="center-align bottom-align message-nav l padding"
+         style="padding-bottom: min(1vh,3vw); flex-grow: 1; overflow: visible">
+        <button class="round extra tertiary left" onclick="{chatroomDialogStateSwitch}">
             <i>sync_alt</i>
             <label>change chatroom</label>
         </button>
         <div class="field label suffix border round fill large bottom fill" style="width:65%">
-            <input type="text" bind:value={messageInput} bind:this={messageTextInput}
+            <input type="text" bind:value={messageInput}
                    onkeydown={(event)=>{event.key === 'Enter' ? sendMessage() : ''}}/>
             <label>Message</label>
         </div>
-        <button class="round extra primary right" onclick="{sendMessage}">
+        <button class="round extra primary" onclick="{sendMessage}" style="overflow: visible">
             <i>send</i>
         </button>
     </nav>
     <nav  bind:this={messageNav} class="center-align bottom-align message-nav s m"
           style="padding-bottom: min(1vh,3vw); flex-grow: 1">
         <div class="column">
-            <button class="round extra responsive tertiary left" onclick="{chatroomDialogStateSwitch}">
+            <button class="round extra tertiary left" onclick="{chatroomDialogStateSwitch}">
                 <i>sync_alt</i>
                 <label>change chatroom</label>
             </button>
-            <div class="row">
-                <div class="field label suffix border round fill large bottom fill" style="width:70%">
-                    <input type="text" bind:value={messageInput} bind:this={messageTextInput}
+            <div class="row max center-align padding"  style="overflow: visible; z-index: 100; width: 100vw">
+                <div class="field label suffix border round fill large bottom fill" style="width:60%">
+                    <input type="text" bind:value={messageInput}
                            onkeydown={(event)=>{event.key === 'Enter' ? sendMessage() : ''}}/>
                     <label>Message</label>
                 </div>
-                <button class="round extra primary right" onclick="{sendMessage}">
+                <button class="round extra primary" onclick="{sendMessage}">
                     <i>send</i>
                 </button>
             </div>

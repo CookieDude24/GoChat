@@ -1,5 +1,0 @@
-import{a,t as n}from"../chunks/Ce9dqvW3.js";import"../chunks/8-ll5k8M.js";import{J as i}from"../chunks/Ch4HhSdZ.js";var s=n(`<main class="m l responsive fixed center middle svelte-19e1tpt"><h5>About GoChat</h5> <p>GoChat was made by Maximilian Dorninger as a Hack Club High Seas project.
-        It's a real-time chat app which uses technologies like websockets and GoLang.</p> <h6>Attributions</h6> <p>The Gopher-Icon was created by Takuya Ueda (https://twitter.com/tenntenn). Licensed under the Creative
-        Commons 3.0 Attributions license.</p></main> <main class="s fixed center middle svelte-19e1tpt"><h5>About GoChat</h5> <p>GoChat was made by Maximilian Dorninger as a Hack Club High Seas project.
-        It's a real-time chat app which uses technologies like websockets and GoLang.</p> <h6>Attributions</h6> <p>The Gopher-Icon was created by Takuya Ueda (https://twitter.com/tenntenn). Licensed under the Creative
-        Commons 3.0 Attributions license.</p></main>`,1);function p(e){var t=s();i(2),a(e,t)}export{p as component};

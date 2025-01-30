@@ -10,61 +10,6 @@
 				box-sizing: border-box;
 			}
 
-			.message {
-				min-width: 10%;
-				width: fit-content;
-				max-width: 60%;
-
-				p {
-					font-size: 16pt;
-				}
-
-				padding: 2em 2em 2em 2em;
-			}
-			@media only screen and (max-width: 600px) {
-				.message {
-					max-width: 100%;
-					text-wrap: wrap;
-				}
-			}
-
-
-			.message-text {
-				text-align: justify;
-			}
-
-			dialog {
-				height: 100vh;
-				width: 100vw;
-
-				main {
-					padding: 5em !important;
-					width: 100vw !important;
-				}
-			}
-
-			.snackbar {
-				display: flex !important;
-				align-items: center !important;
-				justify-content: center !important;
-				flex-direction: row !important;
-
-			}
-
-			#go-down-button {
-				transform: scale(0) rotate(0deg);
-				display: inline;
-				transition: transform 1s;
-				transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-			}
-
-			#go-down-button.active {
-				transform: scale(1) rotate(720deg);
-			}
-			#header, #header *{
-				display: inline;
-			}
-
 			:root body.light {
 				--primary: #006782;
 				--on-primary: #ffffff;
@@ -145,16 +90,17 @@
 
 		</style>
 		
-		<link rel="modulepreload" href="../_app/immutable/entry/start.B_QsMvw3.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CLk6TUQJ.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/Cd1vMRAD.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/Ch4HhSdZ.js">
-		<link rel="modulepreload" href="../_app/immutable/entry/app.ByLDBIaG.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/BmlV4D2q.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/Ce9dqvW3.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/BS501eKZ.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/MfDRg49V.js">
-		<link rel="modulepreload" href="../_app/immutable/chunks/CJRBpCGd.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/start.Clt63ZGJ.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/C8Se1FIl.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/B4VyiVCG.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/OeBgpfWH.js">
+		<link rel="modulepreload" href="../_app/immutable/entry/app.B0tY6Ynz.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/B2dZsSmx.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/ekuua-q1.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/tno_urru.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/CQ_fv8ng.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/BHSylV5-.js">
+		<link rel="modulepreload" href="../_app/immutable/chunks/Cw1NRKZg.js">
 	</head>
 
 	<link href="https://cdn.jsdelivr.net/npm/beercss@3.8.0/dist/cdn/beer.min.css" rel="stylesheet">
@@ -165,15 +111,15 @@
 		<div style="display: contents">
 			<script>
 				{
-					__sveltekit_ezt9dc = {
+					__sveltekit_vhx53x = {
 						base: new URL("..", location).pathname.slice(0, -1)
 					};
 
 					const element = document.currentScript.parentElement;
 
 					Promise.all([
-						import("../_app/immutable/entry/start.B_QsMvw3.js"),
-						import("../_app/immutable/entry/app.ByLDBIaG.js")
+						import("../_app/immutable/entry/start.Clt63ZGJ.js"),
+						import("../_app/immutable/entry/app.B0tY6Ynz.js")
 					]).then(([kit, app]) => {
 						kit.start(app, element);
 					});

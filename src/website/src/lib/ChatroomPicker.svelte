@@ -36,7 +36,7 @@
 
 
 <dialog class="max {active ? 'active' : 'inactive'} center-align">
-    <div style="width: min(30vw,30vw)" class="center middle">
+    <div style="width: min(80vh,80vw)" class="center middle">
         <h5>Choose or create a new Chatroom</h5>
         {#await promise}
             <h3>Loading ... </h3>
