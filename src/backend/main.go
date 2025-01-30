@@ -93,6 +93,7 @@ func main() {
 	http.Handle("/icons/", http.StripPrefix("/icons/", http.FileServer(http.Dir(IconsPath))))
 	http.HandleFunc("/ws", handleConnections)
 	http.HandleFunc("/messages", handleGetMessages)
+	http.HandleFunc("/chatrooms", handleGetChatrooms)
 	http.HandleFunc("/users", handleUsers)
 	http.HandleFunc("/uploadicon", createImage)
 
