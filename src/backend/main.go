@@ -22,6 +22,7 @@ type Message struct {
 	UserID    string `json:"user_id"`
 	Message   string `json:"message"`
 	CreatedAt string `json:"created_at"`
+	ChatRoom  string `json:"chat_room"`
 }
 
 var upgrader = websocket.Upgrader{
@@ -76,11 +77,12 @@ func main() {
 		panic(err)
 	}
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS messages (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		user_id TEXT not null,
-		message TEXT not null,
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	user_id TEXT not null,
+	message TEXT not null,
+	chatroom TEXT not null DEFAULT 'default',
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 	)`)
 	if err != nil {
 		panic(err)
@@ -139,8 +141,13 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Println(msg.Username, "sent", msg.Message)
+
+		if msg.ChatRoom == "" {
+			msg.ChatRoom = "default"
+		}
+
 		// Save the message to the database
-		_, err = db.Exec(`INSERT INTO messages (user_id, message) VALUES (?, ?)`, msg.UserID, msg.Message)
+		_, err = db.Exec(`INSERT INTO messages (user_id, message, chatroom) VALUES (?, ?, ?)`, msg.UserID, msg.Message, msg.ChatRoom)
 		if err != nil {
 			log.Println("Error saving message to database:", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -168,6 +175,40 @@ func handleMessages() {
 		}
 	}
 }
+func handleGetChatrooms(w http.ResponseWriter, r *http.Request) {
+	if dev_mode == "TRUE" {
+		enableCors(&w)
+	}
+	rows, err := db.Query(`
+		SELECT DISTINCT 
+			messages.chatroom
+		FROM 
+			messages
+	`)
+	if err != nil {
+		http.Error(w, "Error fetching messages", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var chatrooms []string
+	for rows.Next() {
+		var chatroom string
+		// Scan all columns in the correct order
+		err := rows.Scan(&chatroom)
+		if err != nil {
+			http.Error(w, "Error scanning messages", http.StatusInternalServerError)
+			return
+		}
+		chatrooms = append(chatrooms, chatroom)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(chatrooms)
+	if err != nil {
+		http.Error(w, "Error encoding messages", http.StatusInternalServerError)
+	}
+}
 func handleGetMessages(w http.ResponseWriter, r *http.Request) {
 	if dev_mode == "TRUE" {
 		enableCors(&w)
@@ -176,6 +217,7 @@ func handleGetMessages(w http.ResponseWriter, r *http.Request) {
 		SELECT 
 			users.username, 
 			messages.message, 
+			messages.chatroom,
 			messages.created_at
 		FROM 
 			users
@@ -194,7 +236,7 @@ func handleGetMessages(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var msg Message
 		// Scan all columns in the correct order
-		err := rows.Scan(&msg.Username, &msg.Message, &msg.CreatedAt)
+		err := rows.Scan(&msg.Username, &msg.Message, &msg.ChatRoom, &msg.CreatedAt)
 		if err != nil {
 			http.Error(w, "Error scanning messages", http.StatusInternalServerError)
 			return
@@ -303,6 +345,35 @@ func handleUsers(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Delete Failed", http.StatusInternalServerError)
 		}
 		log.Println("deleted user:", receivedData.Username)
+		return
+	}
+	if r.Method == "PUT" {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Failed to read request body", http.StatusBadRequest)
+			return
+		}
+
+		log.Println(string(body))
+		var receivedData Message
+		err = json.Unmarshal(body, &receivedData)
+		if err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		if !UserAuthenticated(db, receivedData.Username, receivedData.UserID) {
+			http.Error(w, "Authentication Failed", http.StatusUnauthorized)
+			return
+		}
+
+		if renameUser(db, receivedData.Message, receivedData.Username, receivedData.UserID) {
+			log.Println("renamed user ", receivedData.Username, "to", receivedData.Message)
+			http.Error(w, "", http.StatusNoContent)
+		} else {
+			log.Println("failed to rename user ", receivedData.Username, "to", receivedData.Message)
+			http.Error(w, "", http.StatusInternalServerError)
+		}
 		return
 	}
 }
@@ -460,4 +531,21 @@ func createImage(w http.ResponseWriter, request *http.Request) {
 	log.Println("Successfully update profile picture for user", username)
 	w.WriteHeader(200)
 	return
+}
+func renameUser(db *sql.DB, newUsername string, oldUsername string, userid string) bool {
+	if UserExists(db, newUsername) {
+		log.Println("renameUser: User already exists")
+		return false
+	}
+	_, err := db.Exec(`UPDATE users SET username = ? WHERE user_id = ?`, newUsername, userid)
+	if err != nil {
+		log.Println("renameUser: Unable to rename user; error:", err)
+		return false
+	}
+	err = os.Rename(IconsPath+"/"+oldUsername+".png", IconsPath+"/"+newUsername+".png")
+	if err != nil {
+		log.Println("renameUser: Unable to rename file; error:", err)
+		return false
+	}
+	return true
 }

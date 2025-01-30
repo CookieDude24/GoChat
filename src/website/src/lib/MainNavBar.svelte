@@ -73,7 +73,7 @@
     </a>
     <a href="/"
        class="{page.url.pathname === '/' ? 'active' : ''}">
-        <i>chat</i>
+        <i>forum</i>
         <div>Chat</div>
     </a>
     <a onclick={copyLinktoClipboard}>
@@ -127,7 +127,7 @@
     {/await}
     <a href="/" class="{page.url.pathname === '/' ? 'active' : ''}">
 
-        <i>chat</i>
+        <i>forum</i>
         <div>Chat</div>
     </a>
     <a onclick={copyLinktoClipboard}>
