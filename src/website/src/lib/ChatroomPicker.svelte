@@ -53,7 +53,7 @@
                 {/each}
                     <div class="field label prefix fill round large">
                         <i>create</i>
-                        <input type="text" bind:value={newChatroom} onkeydown="{(event)=>{event.key === 'Enter' ? createChatroom(): ''}}" maxlength="10">
+                        <input type="text" bind:value={newChatroom} onkeydown="{(event)=>{event.key === 'Enter' ? createChatroom(): ''}}" maxlength="20">
                         <label>Create Chatroom</label>
                     </div>
 

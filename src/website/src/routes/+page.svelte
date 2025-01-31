@@ -47,7 +47,7 @@
         };
     }
 
-    function loadMessages() {
+    async function loadMessages() {
         let url = baseurl + "/messages";
 
         return fetch(url, {
@@ -198,7 +198,7 @@
             {/each}
         {/if}
     </div>
-    <nav  bind:this={messageNav} class="center-align bottom-align message-nav l padding"
+    <nav bind:this={messageNav} class="center-align bottom-align message-nav l padding"
          style="padding-bottom: min(1vh,3vw); flex-grow: 1; overflow: visible">
         <button class="round extra tertiary left" onclick="{chatroomDialogStateSwitch}">
             <i>sync_alt</i>
@@ -213,14 +213,14 @@
             <i>send</i>
         </button>
     </nav>
-    <nav  bind:this={messageNav} class="center-align bottom-align message-nav s m"
-          style="padding-bottom: min(1vh,3vw); flex-grow: 1">
+    <nav bind:this={messageNav} class="center-align bottom-align message-nav s m"
+         style="padding-bottom: min(1vh,3vw); flex-grow: 1">
         <div class="column">
             <button class="round extra tertiary left" onclick="{chatroomDialogStateSwitch}">
                 <i>sync_alt</i>
                 <label>change chatroom</label>
             </button>
-            <div class="row max center-align padding"  style="overflow: visible; z-index: 100; width: 100vw">
+            <div class="row max center-align padding" style="overflow: visible; z-index: 100; width: 100vw">
                 <div class="field label suffix border round fill large bottom fill" style="width:60%">
                     <input type="text" bind:value={messageInput}
                            onkeydown={(event)=>{event.key === 'Enter' ? sendMessage() : ''}}/>
